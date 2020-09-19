@@ -49,7 +49,7 @@ class LRUCacheTest {
 
     @Test
     fun `should return valid capacity`() {
-        Assert.assertEquals(DEFAULT_CAPACITY,defaultLRUCache.capacity())
+        Assert.assertEquals(DEFAULT_CAPACITY, defaultLRUCache.capacity())
     }
 
     @Test
@@ -88,7 +88,7 @@ class LRUCacheTest {
     }
 
     @Test
-    fun `should put into LRUCache correctly`() {
+    fun `should update value for key if key is alreadt stored in LRUCache`() {
         defaultLRUCache.put(KEY_2, OTHER_TEST_VAL)
         Assert.assertEquals(OTHER_TEST_VAL, defaultLRUCache.get(KEY_2))
         Assert.assertEquals(INIT_DEFAULT_SIZE, defaultLRUCache.size())

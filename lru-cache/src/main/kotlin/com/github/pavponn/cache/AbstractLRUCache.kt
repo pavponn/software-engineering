@@ -20,11 +20,12 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
     final override fun get(key: K): V? {
         checkHeadAndTailBeforeAndAfterGetAndPut()
         val beforeSize = size()
-        val containsThisKeyBefore = map.containsKey(key)
+        val valueBefore = map[key]?.value
         val getResult = getImpl(key)
         val afterSize = size()
         assert(beforeSize == afterSize) { "'get' method should not mutate state" }
         assert(map[key]?.value == getResult) { "Invalid result in 'get' method ${getResult} ${map[key]}" }
+        assert(valueBefore == map[key]?.value) { "'get' method should not mutate values" }
         checkHeadAndTailBeforeAndAfterGetAndPut()
         return getResult
     }

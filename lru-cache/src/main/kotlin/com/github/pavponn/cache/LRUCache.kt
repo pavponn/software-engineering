@@ -36,6 +36,37 @@ class LRUCache<K, V>(capacity: Int): AbstractLRUCache<K, V>(capacity) {
         }
     }
 
+    override fun removeImpl(key: K): Boolean {
+        if (!containsKey(key)) {
+            return false
+        }
+        val node = map[key]
+        map.remove(key)
+        when {
+            tail == head -> {
+                assert(node == tail)
+                tail = null
+                head = null
+            }
+            node == head -> {
+                head = node?.next
+            }
+            node == tail -> {
+                tail = node?.prev
+            }
+            else -> {
+                val prev = node?.prev
+                val next = node?.next
+                prev?.next = next
+                next?.prev = prev
+            }
+        }
+        size--
+        node?.prev = null
+        node?.next = null
+        return true
+    }
+
     private fun bringToFront(node: Node) {
         if (node == head) {
             return

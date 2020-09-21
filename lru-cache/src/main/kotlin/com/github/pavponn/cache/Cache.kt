@@ -5,6 +5,8 @@ interface Cache<K, V> {
 
     fun get(key: K): V?
 
+    fun remove(key: K): Boolean
+
     fun containsKey(key: K): Boolean
 
     fun containsAllKeys(vararg keys: K): Boolean

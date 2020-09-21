@@ -18,7 +18,7 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
     }
 
     final override fun get(key: K): V? {
-        checkHeadAndTailBeforeAndAfterGetAndPut()
+        checkHeadAndTailPut()
         val beforeSize = size()
         val valueBefore = map[key]?.value
         val getResult = getImpl(key)
@@ -26,12 +26,12 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
         assert(beforeSize == afterSize) { "'get' method should not mutate state" }
         assert(map[key]?.value == getResult) { "Invalid result in 'get' method ${getResult} ${map[key]}" }
         assert(valueBefore == map[key]?.value) { "'get' method should not mutate values" }
-        checkHeadAndTailBeforeAndAfterGetAndPut()
+        checkHeadAndTailPut()
         return getResult
     }
 
     final override fun containsKey(key: K): Boolean {
-        return get(key) != null
+        return map.containsKey(key)
     }
 
     final override fun containsAllKeys(vararg keys: K): Boolean {
@@ -41,9 +41,8 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
         return true
     }
 
-
     final override fun put(key: K, value: V) {
-        checkHeadAndTailBeforeAndAfterGetAndPut()
+        checkHeadAndTailPut()
         val beforeSize = size()
         val isFullBefore = isFull()
         val containsThisKeyBefore= map.containsKey(key)
@@ -59,7 +58,25 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
         assert(!isFullBefore || isFullBefore && isFullAfter) { "Size invariant is broken in 'put' method" }
         assert(containsThisKeyAfter) { "'Put' method doesn't add (key, value) to cache" }
         assert(map[key]!!.value!! == value) { "Invalid value after performing 'put' operation" }
-        checkHeadAndTailBeforeAndAfterGetAndPut()
+        checkHeadAndTailPut()
+    }
+
+    final override fun remove(key: K): Boolean {
+        checkHeadAndTailPut()
+        val beforeSize = size()
+        val isFullBefore = isFull()
+        val containsThisKeyBefore= map.containsKey(key)
+        val removeRes = removeImpl(key)
+        val afterSize = size()
+        val isFullAfter = isFull()
+        assert(containsThisKeyBefore == removeRes)
+        assert(removeRes && beforeSize == afterSize + 1 || !removeRes && beforeSize == afterSize)
+        assert(
+                removeRes && (isFullBefore && !isFullAfter || !isFullBefore && !isFullAfter)
+                || !removeRes && isFullBefore == isFullAfter
+        )
+        checkHeadAndTailPut()
+        return removeRes
     }
 
     final override fun size(): Int {
@@ -78,7 +95,7 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
 
     final override fun isFull() = size() == cacheCapacity
 
-    private fun checkHeadAndTailBeforeAndAfterGetAndPut() {
+    private fun checkHeadAndTailPut() {
         assert(
             (size() > 0 && head != null && tail != null)
                     || (size() == 0 && head == null && tail == null)
@@ -90,4 +107,6 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
     protected abstract fun getImpl(key: K): V?
 
     protected abstract fun putImpl(key: K, value: V)
+
+    protected abstract fun removeImpl(key: K): Boolean
 }

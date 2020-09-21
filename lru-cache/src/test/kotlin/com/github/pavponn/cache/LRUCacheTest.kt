@@ -81,17 +81,57 @@ class LRUCacheTest {
     }
 
     @Test
-    fun `should put new value into LRUCache correctly`() {
+    fun `should put new (key,value) into LRUCache correctly`() {
         defaultLRUCache.put(OTHER_TEST_KEY, OTHER_TEST_VAL)
         Assert.assertEquals(OTHER_TEST_VAL, defaultLRUCache.get(OTHER_TEST_KEY))
         Assert.assertEquals(INIT_DEFAULT_SIZE + 1, defaultLRUCache.size())
     }
 
     @Test
-    fun `should update value for key if key is alreadt stored in LRUCache`() {
+    fun `should update value for key if key is already stored in LRUCache`() {
         defaultLRUCache.put(KEY_2, OTHER_TEST_VAL)
         Assert.assertEquals(OTHER_TEST_VAL, defaultLRUCache.get(KEY_2))
         Assert.assertEquals(INIT_DEFAULT_SIZE, defaultLRUCache.size())
+    }
+
+    @Test
+    fun `should remove existing first key correctly`() {
+        Assert.assertTrue(defaultLRUCache.remove(KEY_4))
+        Assert.assertFalse(defaultLRUCache.containsKey(KEY_4))
+        Assert.assertEquals(3, defaultLRUCache.size())
+        Assert.assertTrue(defaultLRUCache.containsAllKeys(KEY_1, KEY_2, KEY_3))
+    }
+
+    @Test
+    fun `should remove existing last key correctly`() {
+        Assert.assertTrue(defaultLRUCache.remove(KEY_1))
+        Assert.assertFalse(defaultLRUCache.containsKey(KEY_1))
+        Assert.assertEquals(3, defaultLRUCache.size())
+        Assert.assertTrue(defaultLRUCache.containsAllKeys(KEY_2, KEY_3, KEY_4))
+    }
+
+    @Test
+    fun `should remove existing key in the middle correctly`() {
+        Assert.assertTrue(defaultLRUCache.remove(KEY_3))
+        Assert.assertFalse(defaultLRUCache.containsKey(KEY_3))
+        Assert.assertEquals(3, defaultLRUCache.size())
+        Assert.assertTrue(defaultLRUCache.containsAllKeys(KEY_1, KEY_2, KEY_4))
+    }
+
+    @Test
+    fun `should remove one key correctly`() {
+        val lruCache = LRUCache<Int, Int>(10)
+        lruCache.put(1, 0)
+        Assert.assertTrue(lruCache.remove(1))
+        Assert.assertFalse(lruCache.containsKey(1))
+        Assert.assertEquals(0, lruCache.size())
+    }
+
+    @Test
+    fun `should not remove non existing key`() {
+        Assert.assertFalse(defaultLRUCache.remove(OTHER_TEST_KEY))
+        Assert.assertEquals(4, defaultLRUCache.size())
+        Assert.assertTrue(defaultLRUCache.containsAllKeys(KEY_1, KEY_2, KEY_3, KEY_4))
     }
 
     @Test
@@ -137,4 +177,29 @@ class LRUCacheTest {
         Assert.assertFalse(lruCache.containsKey(3))
         Assert.assertTrue(lruCache.containsAllKeys(1, 2, 4, 5))
     }
+
+    @Test
+    fun `should perform all operations correctly`() {
+        val lruCache = LRUCache<Int, Int>(4)
+        lruCache.put(0, 100)
+        Assert.assertNotNull(lruCache.get(0))
+        lruCache.put(1, 1)
+        lruCache.put(2, 20)
+        lruCache.put(100, 121212)
+        Assert.assertEquals(1, lruCache.get(1))
+        Assert.assertEquals(20, lruCache.get(2))
+        lruCache.put(4, 2020)
+        lruCache.put(10, 23)
+        lruCache.remove(4)
+        Assert.assertNull(lruCache.get(4))
+        lruCache.put(4, 10000)
+        lruCache.put(11, 100)
+        Assert.assertTrue(lruCache.containsAllKeys( 2, 4, 10, 11))
+        Assert.assertTrue(lruCache.isFull())
+        Assert.assertEquals(20, lruCache.get(2))
+        Assert.assertEquals(10000, lruCache.get(4))
+        Assert.assertEquals(23, lruCache.get(10))
+        Assert.assertEquals(100, lruCache.get(11))
+    }
+
 }

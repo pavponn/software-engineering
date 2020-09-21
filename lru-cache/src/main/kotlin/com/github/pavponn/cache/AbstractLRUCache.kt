@@ -1,7 +1,7 @@
 package com.github.pavponn.cache
 
 abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
-    protected val cacheCapacity = capacity
+    private val cacheCapacity = capacity
     protected var head: Node? = null
     protected var tail: Node? = null
     protected val map = hashMapOf<K, Node>()
@@ -24,7 +24,7 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
         val getResult = getImpl(key)
         val afterSize = size()
         assert(beforeSize == afterSize) { "'get' method should not mutate state" }
-        assert(map[key]?.value == getResult) { "Invalid result in 'get' method ${getResult} ${map[key]}" }
+        assert(map[key]?.value == getResult) { "Invalid result in 'get' method" }
         assert(valueBefore == map[key]?.value) { "'get' method should not mutate values" }
         checkHeadAndTailPut()
         return getResult

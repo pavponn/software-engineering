@@ -19,7 +19,7 @@ class LRUCacheTest {
         const val INIT_DEFAULT_SIZE = 4
         const val DEFAULT_CAPACITY = 7
     }
-    lateinit var defaultLRUCache: LRUCache<Int, Int>
+    private lateinit var defaultLRUCache: LRUCache<Int, Int>
 
     @Before fun setUp() {
         defaultLRUCache = LRUCache(DEFAULT_CAPACITY)
@@ -39,12 +39,12 @@ class LRUCacheTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `should throw exception for zero capacity`() {
-        val lruCache = LRUCache<Int, Int>(0)
+        LRUCache<Int, Int>(0)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun `should throw exception for negative capacity`() {
-        val lruCache = LRUCache<Int, Int>(-2)
+        LRUCache<Int, Int>(-2)
     }
 
     @Test

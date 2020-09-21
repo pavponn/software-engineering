@@ -1,7 +1,5 @@
 package com.github.pavponn.cache
 
-import com.github.pavponn.cache.AbstractLRUCache
-
 class LRUCache<K, V>(capacity: Int): AbstractLRUCache<K, V>(capacity) {
     private var size = 0
 

@@ -99,7 +99,7 @@ abstract class AbstractLRUCache<K, V>(capacity: Int): Cache<K, V> {
         assert(
             (size() > 0 && head != null && tail != null)
                     || (size() == 0 && head == null && tail == null)
-        )
+        ) { "size is not synchronized with list"}
     }
 
     protected abstract fun sizeImpl(): Int

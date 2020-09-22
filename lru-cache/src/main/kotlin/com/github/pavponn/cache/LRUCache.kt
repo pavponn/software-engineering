@@ -79,7 +79,7 @@ class LRUCache<K, V>(capacity: Int): AbstractLRUCache<K, V>(capacity) {
             return
         }
         node.next = head
-        head!!.prev = node
+        head?.prev = node
         node.prev = null
         head = node
     }
@@ -87,9 +87,9 @@ class LRUCache<K, V>(capacity: Int): AbstractLRUCache<K, V>(capacity) {
     private fun removeFromTail() {
         map.remove(tail!!.key)
         val oldTail = tail!!
-        tail = tail!!.prev
+        tail = tail?.prev
         oldTail.prev = null
-        tail!!.next = null
+        tail?.next = null
     }
 
     private fun deleteNode(node: Node) {

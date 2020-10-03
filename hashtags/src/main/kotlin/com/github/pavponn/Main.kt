@@ -1,7 +1,7 @@
 package com.github.pavponn
 
 import com.github.pavponn.vk.client.VkClientImpl
-import com.github.pavponn.vk.manager.VKManagerImpl
+import com.github.pavponn.vk.manager.VkManagerImpl
 import com.github.pavponn.vk.models.UrlConfig
 import com.github.pavponn.vk.models.Version
 import com.github.pavponn.vk.models.VkConfig
@@ -14,6 +14,6 @@ fun main() = runBlocking {
         UrlConfig("https", "api.vk.com", 443),
         Version(5, 124)
     )
-    val vkManager = VKManagerImpl(VkClientImpl(vkConfig))
-    vkManager.getHashTagStatsForNHoursFromNow("лол", 12).forEach(::println)
+    val vkManager = VkManagerImpl(VkClientImpl(vkConfig))
+    vkManager.getHashTagStatsForNHoursFromNow("autumn", 12).forEach(::println)
 }

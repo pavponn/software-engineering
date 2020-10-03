@@ -4,14 +4,14 @@ import com.github.pavponn.url.UrlCreator
 import com.github.pavponn.url.UrlReader
 import com.github.pavponn.vk.models.Response
 import com.github.pavponn.vk.models.VkConfig
-import com.github.pavponn.vk.parser.VKResponseParser
+import com.github.pavponn.vk.parser.VkResponseParserImpl
 import kotlinx.coroutines.withTimeout
 
 /**
  * @author pavponn
  */
-class VkClientImpl(private val vkConfig: VkConfig) {
-    private val parser = VKResponseParser()
+class VkClientImpl(private val vkConfig: VkConfig) : VkClient {
+    private val parser = VkResponseParserImpl()
     private val urlReader = UrlReader()
     private val urlCreator = UrlCreator()
 
@@ -19,11 +19,11 @@ class VkClientImpl(private val vkConfig: VkConfig) {
         const val NEWS_FEED_SEARCH_METHOD = "/method/newsfeed.search"
     }
 
-    public suspend fun getStatByHashtagsForHourBeforeTime(hashTag: String, startTime: Long, endTime: Long): Response? {
+    public override suspend fun getStatByHashtagsForHourBeforeTime(hashTag: String, startTime: Long, endTime: Long): Response? {
         val responseString = urlReader.readAsString(createHashTagsStatsUrlString(hashTag, startTime, endTime))
         return try {
             withTimeout(vkConfig.timeout.toMillis()) {
-                parser.parseResponse(responseString)
+                parser.parse(responseString)
             }
         } catch (e: Exception) {
             null

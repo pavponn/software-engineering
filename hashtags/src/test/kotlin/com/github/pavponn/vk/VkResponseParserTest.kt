@@ -3,7 +3,6 @@ package com.github.pavponn.vk
 import com.github.pavponn.exceptions.ResponseParserException
 import com.github.pavponn.vk.parser.VkResponseParser
 import com.github.pavponn.vk.parser.VkResponseParserImpl
-import org.jetbrains.annotations.TestOnly
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -16,7 +15,7 @@ class VkResponseParserTest {
 
     @Before
     fun setUp() {
-        vkResponseParser = VkResponseParserImpl();
+        vkResponseParser = VkResponseParserImpl()
     }
 
     @Test

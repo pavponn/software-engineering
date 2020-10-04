@@ -27,13 +27,13 @@ class VkManagerTest {
 
 
     @Before
-    public fun setUp() {
+    fun setUp() {
         MockitoAnnotations.initMocks(this)
         vkManager = VkManagerImpl(vkClient)
     }
 
     @Test
-    public fun `should return valid stats for 1 hour`(): Unit = runBlocking {
+    fun `should return valid stats for 1 hour`(): Unit = runBlocking {
         val hashtag = "some_tag"
         mockClientFunc(hashtag, Response(42, 42))
         val result = vkManager.getHashTagStatsForNHoursFromNow(hashtag, 1)
@@ -42,17 +42,17 @@ class VkManagerTest {
     }
 
     @Test
-    public fun `should return valid stats for multiple hours`(): Unit = runBlocking {
+    fun `should return valid stats for multiple hours`(): Unit = runBlocking {
         val hashtag = "another_tag"
         mockClientFunc(hashtag, Response(2, 2))
         val result = vkManager.getHashTagStatsForNHoursFromNow(hashtag, 4)
         val elem = Stats(hashtag, 2)
         Assert.assertEquals(result.size, 4)
-        Assert.assertEquals(result, listOf<Stats>(elem, elem, elem, elem))
+        Assert.assertEquals(result, listOf(elem, elem, elem, elem))
     }
 
     @Test
-    public fun `should return stats with -1 counter if client return null`(): Unit = runBlocking {
+    fun `should return stats with -1 counter if client return null`(): Unit = runBlocking {
         val hashtag = "hashtag"
         mockClientFunc(hashtag, null)
         val res = vkManager.getHashTagStatsForNHoursFromNow(hashtag, 1)
@@ -61,21 +61,21 @@ class VkManagerTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    public fun `should throw if hashtag is empty`(): Unit = runBlocking {
+    fun `should throw if hashtag is empty`(): Unit = runBlocking {
         val hashtag = ""
         mockClientFunc(hashtag, Response(2, 2))
         vkManager.getHashTagStatsForNHoursFromNow(hashtag, 5)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    public fun `should throw if hours param equals 0`(): Unit = runBlocking {
+    fun `should throw if hours param equals 0`(): Unit = runBlocking {
         val hashtag = "tag"
         mockClientFunc(hashtag, Response(2, 2))
         vkManager.getHashTagStatsForNHoursFromNow(hashtag, 0)
     }
 
     @Test(expected = IllegalArgumentException::class)
-    public fun `should throw if hours var is negative`(): Unit = runBlocking {
+    fun `should throw if hours var is negative`(): Unit = runBlocking {
         val hashtag = "tag"
         mockClientFunc(hashtag, Response(2, 2))
         vkManager.getHashTagStatsForNHoursFromNow(hashtag, -1)
@@ -83,7 +83,7 @@ class VkManagerTest {
 
 
     @Test(expected = IllegalArgumentException::class)
-    public fun `should throw if hours param is more than 24`(): Unit = runBlocking {
+    fun `should throw if hours param is more than 24`(): Unit = runBlocking {
         val hashtag = "tag"
         mockClientFunc(hashtag, Response(2, 2))
         vkManager.getHashTagStatsForNHoursFromNow(hashtag, 25)
@@ -97,5 +97,5 @@ class VkManagerTest {
             .thenReturn(response)
     }
 
-    private fun <T : Any> safeEq(value: T): T = org.mockito.Matchers.eq(value) ?: value
+    private fun <T : Any> safeEq(value: T): T = eq(value) ?: value
 }

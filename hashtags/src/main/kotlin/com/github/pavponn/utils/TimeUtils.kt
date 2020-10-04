@@ -7,13 +7,12 @@ import java.time.Instant
  */
 class TimeUtils {
     companion object {
-        const val SECONDS_IN_HOUR = 60L * 60L
+        private const val SECONDS_IN_HOUR = 60L * 60L
 
         fun nHoursBeforeNowInterval(time: Instant, n: Int): Pair<Long, Long> {
+            require(n >= 0)
             val startTime = time.minusSeconds((n + 1) * SECONDS_IN_HOUR)
             val endTime = time.minusSeconds(n * SECONDS_IN_HOUR)
-            assert (startTime.epochSecond > 0)
-            assert (endTime.epochSecond > 0)
             return Pair(startTime.epochSecond, endTime.epochSecond)
         }
     }

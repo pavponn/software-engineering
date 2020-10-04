@@ -16,7 +16,7 @@ class UrlCreatorTest {
     }
     
     @Test
-    fun `should create valud url with one param`() {
+    fun `should create valid url with one param`() {
         val key = "a"
         val value = "2"
         val url = UrlCreator().getUrlString(BASE_URL, mapOf(Pair(key, value)))

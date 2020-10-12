@@ -4,6 +4,7 @@ import com.github.pavponn.url.UrlCreator
 import com.github.pavponn.url.UrlReader
 import com.github.pavponn.vk.models.Response
 import com.github.pavponn.vk.models.VkConfig
+import com.github.pavponn.vk.parser.VkResponseParser
 import com.github.pavponn.vk.parser.VkResponseParserImpl
 import kotlinx.coroutines.withTimeout
 import java.net.URLEncoder
@@ -13,9 +14,9 @@ import java.nio.charset.StandardCharsets
  * @author pavponn
  */
 class VkClientImpl(private val vkConfig: VkConfig) : VkClient {
-    private val parser = VkResponseParserImpl()
-    private val urlReader = UrlReader()
-    private val urlCreator = UrlCreator()
+    private val parser: VkResponseParser = VkResponseParserImpl()
+    private val urlReader: UrlReader = UrlReader()
+    private val urlCreator: UrlCreator = UrlCreator()
 
     companion object {
         const val NEWS_FEED_SEARCH_METHOD = "/method/newsfeed.search"

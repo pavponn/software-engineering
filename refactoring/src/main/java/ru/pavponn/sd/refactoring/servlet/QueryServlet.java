@@ -2,12 +2,13 @@ package ru.pavponn.sd.refactoring.servlet;
 
 import ru.pavponn.sd.refactoring.dao.ProductDao;
 import ru.pavponn.sd.refactoring.dao.ProductDaoReadWrite;
-import ru.pavponn.sd.refactoring.models.Product;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static ru.pavponn.sd.refactoring.response.ResponseHtmlBuilder.responseBuilder;
 
 /**
  * @author akirakozov
@@ -27,29 +28,25 @@ public class QueryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String command = request.getParameter("command");
         if ("max".equals(command)) {
-            Product product = productDao.getMaxPriceProduct();
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("<h1>Product with max price: </h1>");
-            response.getWriter().println(product.getName() + "\t" + product.getPrice() + "</br>");
-            response.getWriter().println("</body></html>");
+            String responseString = responseBuilder("<h1>Product with max price: </h1>")
+                    .addProduct(productDao.getMaxPriceProduct())
+                    .build();
+            response.getWriter().println(responseString);
         } else if ("min".equals(command)) {
-            Product product = productDao.getMinPriceProduct();
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("<h1>Product with min price: </h1>");
-            response.getWriter().println(product.getName() + "\t" + product.getPrice() + "</br>");
-            response.getWriter().println("</body></html>");
+            String responseString = responseBuilder("<h1>Product with min price: </h1>")
+                    .addProduct(productDao.getMinPriceProduct())
+                    .build();
+            response.getWriter().println(responseString);
         } else if ("sum".equals(command)) {
-            long sum = productDao.getSumPrices();
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("Summary price: ");
-            response.getWriter().println(sum);
-            response.getWriter().println("</body></html>");
+            String responseString = responseBuilder("Summary price: ")
+                    .addLine(productDao.getSumPrices())
+                    .build();
+            response.getWriter().println(responseString);
         } else if ("count".equals(command)) {
-            long count = productDao.getCount();
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("Number of products: ");
-            response.getWriter().println(count);
-            response.getWriter().println("</body></html>");
+            String responseString = responseBuilder("Number of products: ")
+                    .addLine(productDao.getCount())
+                    .build();
+            response.getWriter().println(responseString);
         } else {
             response.getWriter().println("Unknown command: " + command);
         }

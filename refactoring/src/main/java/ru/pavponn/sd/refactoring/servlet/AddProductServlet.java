@@ -1,5 +1,9 @@
 package ru.pavponn.sd.refactoring.servlet;
 
+import ru.pavponn.sd.refactoring.dao.ProductDao;
+import ru.pavponn.sd.refactoring.dao.ProductDaoReadWrite;
+import ru.pavponn.sd.refactoring.models.Product;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,35 +16,28 @@ import java.sql.Statement;
  * @author akirakozov
  */
 public class AddProductServlet extends HttpServlet {
-    private final String dbName;
+    private final ProductDaoReadWrite productDao;
 
     public AddProductServlet() {
         this("test.db");
     }
 
     public AddProductServlet(String dbName) {
-        this.dbName = dbName;
+        this.productDao = new ProductDao(dbName);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String name = request.getParameter("name");
         long price = Long.parseLong(request.getParameter("price"));
-
-        try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
-                String sql = "INSERT INTO PRODUCT " +
-                        "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
-                Statement stmt = c.createStatement();
-                stmt.executeUpdate(sql);
-                stmt.close();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        Product product = new Product(name, price);
         response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println("OK");
+        if (productDao.addProduct(product)) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().println("OK");
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("FAIL");
+        }
     }
 }

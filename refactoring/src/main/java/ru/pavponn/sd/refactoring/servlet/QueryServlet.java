@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static ru.pavponn.sd.refactoring.commands.Commands.*;
 import static ru.pavponn.sd.refactoring.response.ResponseHtmlBuilder.responseBuilder;
 
 /**
@@ -27,30 +28,32 @@ public class QueryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String command = request.getParameter("command");
-        if ("max".equals(command)) {
-            String responseString = responseBuilder("<h1>Product with max price: </h1>")
-                    .addProduct(productDao.getMaxPriceProduct())
-                    .build();
-            response.getWriter().println(responseString);
-        } else if ("min".equals(command)) {
-            String responseString = responseBuilder("<h1>Product with min price: </h1>")
-                    .addProduct(productDao.getMinPriceProduct())
-                    .build();
-            response.getWriter().println(responseString);
-        } else if ("sum".equals(command)) {
-            String responseString = responseBuilder("Summary price: ")
-                    .addLine(productDao.getSumPrices())
-                    .build();
-            response.getWriter().println(responseString);
-        } else if ("count".equals(command)) {
-            String responseString = responseBuilder("Number of products: ")
-                    .addLine(productDao.getCount())
-                    .build();
-            response.getWriter().println(responseString);
-        } else {
-            response.getWriter().println("Unknown command: " + command);
+        String responseString;
+        switch (command) {
+            case MAX:
+                responseString = responseBuilder("<h1>Product with max price: </h1>")
+                        .addProduct(productDao.getMaxPriceProduct())
+                        .build();
+                break;
+            case MIN:
+                responseString = responseBuilder("<h1>Product with min price: </h1>")
+                        .addProduct(productDao.getMinPriceProduct())
+                        .build();
+                break;
+            case SUM:
+                responseString = responseBuilder("Summary price: ")
+                        .addLine(productDao.getSumPrices())
+                        .build();
+                break;
+            case COUNT:
+                responseString = responseBuilder("Number of products: ")
+                        .addLine(productDao.getCount())
+                        .build();
+                break;
+            default:
+                responseString = "Unknown command: " + command;
         }
-
+        response.getWriter().println(responseString);
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
     }

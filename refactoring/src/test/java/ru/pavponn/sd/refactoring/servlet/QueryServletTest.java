@@ -2,8 +2,9 @@ package ru.pavponn.sd.refactoring.servlet;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.pavponn.sd.refactoring.dao.ProductDaoRW;
+import ru.pavponn.sd.refactoring.models.Product;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +15,7 @@ import java.sql.SQLException;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static ru.pavponn.sd.refactoring.servlet.TestUtils.addProductToDB;
+import static ru.pavponn.sd.refactoring.servlet.TestUtils.mockQueryRequest;
 import static ru.pavponn.sd.refactoring.servlet.TestUtils.mockResponse;
 
 public class QueryServletTest {
@@ -23,29 +24,24 @@ public class QueryServletTest {
     PrintWriter writer;
 
     private final static String EXP_PRODUCT_NAME = "MacBook16";
-    private final static String EXP_PRODUCT_PRICE = "2399";
+    private final static long EXP_PRODUCT_PRICE = 2399;
     private final static String CHP_PRODUCT_NAME = "ThinkPad";
-    private final static String CHP_PRODUCT_PRICE = "999";
+    private final static long CHP_PRODUCT_PRICE = 999;
 
-    private final static String DB_NAME = "test_unit.db";
-
-    @BeforeClass
-    public static void setUpDatabase() throws SQLException {
-        TestUtils.createProductsTable(DB_NAME);
-    }
+    Product product1 = new Product(EXP_PRODUCT_NAME, EXP_PRODUCT_PRICE);
+    Product product2 = new Product(CHP_PRODUCT_NAME, CHP_PRODUCT_PRICE);
 
     @Before
     public void setUp() throws SQLException {
-        TestUtils.clearProductsTable(DB_NAME);
-        servlet = new QueryServlet(DB_NAME);
         stringWriter = new StringWriter();
         writer = new PrintWriter(stringWriter);
-        addProductToDB(DB_NAME, EXP_PRODUCT_NAME, EXP_PRODUCT_PRICE);
-        addProductToDB(DB_NAME, CHP_PRODUCT_NAME, CHP_PRODUCT_PRICE);
     }
 
     @Test
     public void shouldShowProductWithMaxPrice() throws IOException {
+        ProductDaoRW productDao = mock(ProductDaoRW.class);
+        when(productDao.getMaxPriceProduct()).thenReturn(product1);
+        servlet = new QueryServlet(productDao);
         HttpServletRequest request = mockQueryRequest("max");
         HttpServletResponse response = mockResponse(writer);
         servlet.doGet(request, response);
@@ -60,6 +56,9 @@ public class QueryServletTest {
 
     @Test
     public void shouldShowProductWithMinPrice() throws IOException {
+        ProductDaoRW productDao = mock(ProductDaoRW.class);
+        when(productDao.getMinPriceProduct()).thenReturn(product2);
+        servlet = new QueryServlet(productDao);
         HttpServletRequest request = mockQueryRequest("min");
         HttpServletResponse response = mockResponse(writer);
         servlet.doGet(request, response);
@@ -74,7 +73,9 @@ public class QueryServletTest {
 
     @Test
     public void shouldShowCorrectSumOfAllProducts() throws IOException {
-
+        ProductDaoRW productDao = mock(ProductDaoRW.class);
+        when(productDao.getSumPrices()).thenReturn(CHP_PRODUCT_PRICE + EXP_PRODUCT_PRICE);
+        servlet = new QueryServlet(productDao);
         HttpServletRequest request = mockQueryRequest("sum");
         HttpServletResponse response = mockResponse(writer);
         servlet.doGet(request, response);
@@ -89,7 +90,9 @@ public class QueryServletTest {
 
     @Test
     public void shouldShowCorrectNumberOfProducts() throws IOException {
-
+        ProductDaoRW productDao = mock(ProductDaoRW.class);
+        when(productDao.getCount()).thenReturn(2L);
+        servlet = new QueryServlet(productDao);
         HttpServletRequest request = mockQueryRequest("count");
         HttpServletResponse response = mockResponse(writer);
         servlet.doGet(request, response);
@@ -100,13 +103,6 @@ public class QueryServletTest {
                 "</body></html>\n";
 
         Assert.assertEquals(expectedResult, stringWriter.toString());
-    }
-
-
-    private static HttpServletRequest mockQueryRequest(String cmd) {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getParameter("command")).thenReturn(cmd);
-        return request;
     }
 
 }

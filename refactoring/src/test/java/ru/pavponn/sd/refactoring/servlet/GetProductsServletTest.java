@@ -2,8 +2,9 @@ package ru.pavponn.sd.refactoring.servlet;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.pavponn.sd.refactoring.dao.ProductDaoRW;
+import ru.pavponn.sd.refactoring.models.Product;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,9 +12,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.mock;
-import static ru.pavponn.sd.refactoring.servlet.TestUtils.addProductToDB;
+import static org.mockito.Mockito.when;
+import static ru.pavponn.sd.refactoring.servlet.TestUtils.mockGetProductRequest;
 import static ru.pavponn.sd.refactoring.servlet.TestUtils.mockResponse;
 
 public class GetProductsServletTest {
@@ -21,23 +26,17 @@ public class GetProductsServletTest {
     StringWriter stringWriter;
     PrintWriter writer;
 
-    private final static String DB_NAME = "test_unit.db";
-
-    @BeforeClass
-    public static void setUpDatabase() throws SQLException {
-        TestUtils.createProductsTable(DB_NAME);
-    }
-
     @Before
     public void setUp() throws SQLException {
-        TestUtils.clearProductsTable(DB_NAME);
-        servlet = new GetProductsServlet(DB_NAME);
         stringWriter = new StringWriter();
         writer = new PrintWriter(stringWriter);
     }
 
     @Test
     public void shouldShowNoProductsIfEmpty() throws IOException {
+        ProductDaoRW productDao = mock(ProductDaoRW.class);
+        when(productDao.getAllProducts()).thenReturn(new ArrayList<Product>());
+        servlet = new GetProductsServlet(productDao);
         HttpServletRequest request = mockGetProductRequest();
         HttpServletResponse response = mockResponse(writer);
         servlet.doGet(request, response);
@@ -47,38 +46,37 @@ public class GetProductsServletTest {
 
     @Test
     public void shouldShowAddedProduct() throws SQLException, IOException {
-        String name = "bag";
-        String price = "200";
-        addProductToDB(DB_NAME, name, price);
+        Product product = new Product("bag", 200);
+        ProductDaoRW productDao = mock(ProductDaoRW.class);
+        when(productDao.getAllProducts()).thenReturn(singletonList(product));
+        servlet = new GetProductsServlet(productDao);
         HttpServletRequest request = mockGetProductRequest();
         HttpServletResponse response = mockResponse(writer);
+
         servlet.doGet(request, response);
         String expectedResult = "<html><body>\n" +
-                name + "\t" + price + "</br>\n" +
+                product.getName() + "\t" + product.getPrice() + "</br>\n" +
                 "</body></html>\n";
         Assert.assertEquals(expectedResult, stringWriter.toString());
     }
 
     @Test
     public void shouldShowMultipleAddedProducts() throws SQLException, IOException {
-        String name1 = "bag";
-        String price1 = "200";
-        String name2 = "iphone12";
-        String price2 = "1399";
-        addProductToDB(DB_NAME, name1, price1);
-        addProductToDB(DB_NAME, name2, price2);
+        Product product1 = new Product("bag", 200);
+        Product product2 = new Product("iphone12", 1399);
+        ProductDaoRW productDao = mock(ProductDaoRW.class);
+        when(productDao.getAllProducts()).thenReturn(asList(product1, product2));
+        servlet = new GetProductsServlet(productDao);
         HttpServletRequest request = mockGetProductRequest();
         HttpServletResponse response = mockResponse(writer);
+
         servlet.doGet(request, response);
         String expectedResult =
                 "<html><body>\n" +
-                        name1 + "\t" + price1 + "</br>\n" +
-                        name2 + "\t" + price2 + "</br>\n" +
+                        product1.getName() + "\t" + product1.getPrice() + "</br>\n" +
+                        product2.getName() + "\t" + product2.getPrice() + "</br>\n" +
                         "</body></html>\n";
         Assert.assertEquals(expectedResult, stringWriter.toString());
     }
 
-    private static HttpServletRequest mockGetProductRequest() {
-        return mock(HttpServletRequest.class);
-    }
 }

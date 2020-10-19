@@ -4,6 +4,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.pavponn.sd.refactoring.dao.ProductDaoRW;
+import ru.pavponn.sd.refactoring.dbconnection.DBConnectionManager;
+import ru.pavponn.sd.refactoring.models.Product;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +17,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 
 import static org.mockito.Mockito.*;
+import static ru.pavponn.sd.refactoring.servlet.TestUtils.mockAddRequest;
 import static ru.pavponn.sd.refactoring.servlet.TestUtils.mockResponse;
 
 public class AddProductServletTest {
@@ -21,37 +25,30 @@ public class AddProductServletTest {
     StringWriter stringWriter;
     PrintWriter writer;
 
-    private final static String DB_NAME = "test_unit.db";
-
-    @BeforeClass
-    public static void setUpDatabase() throws SQLException {
-        TestUtils.createProductsTable(DB_NAME);
-    }
-
     @Before
     public void setUp() throws SQLException {
-        TestUtils.clearProductsTable(DB_NAME);
-        servlet = new AddProductServlet(DB_NAME);
         stringWriter = new StringWriter();
         writer = new PrintWriter(stringWriter);
     }
 
     @Test
     public void shouldAddProductCorrectly() throws IOException {
-        HttpServletRequest request = mockAddRequest("iphone6", "999");
+        String name = "iphone6";
+        String price = "999";
+        Product product = new Product(name, Long.parseLong(price));
+
+        HttpServletRequest request = mockAddRequest(name, price);
         HttpServletResponse response = mockResponse(writer);
+        ProductDaoRW productDao = mock(ProductDaoRW.class);
+        doReturn(true).when(productDao).addProduct(product);
+
+        servlet = new AddProductServlet(productDao);
         servlet.doGet(request, response);
         verify(request, atLeast(1)).getParameter("name");
         verify(request, atLeast(1)).getParameter("price");
+        verify(productDao, times(1)).addProduct(product);
         writer.flush();
         Assert.assertEquals(stringWriter.toString(), "OK\n");
     }
 
-
-    private static HttpServletRequest mockAddRequest(String product, String price) {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getParameter("name")).thenReturn(product);
-        when(request.getParameter("price")).thenReturn(price);
-        return request;
-    }
 }

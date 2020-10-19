@@ -1,27 +1,30 @@
 package ru.pavponn.sd.refactoring.dao;
 
+import ru.pavponn.sd.refactoring.dbconnection.DBConnectionManager;
 import ru.pavponn.sd.refactoring.models.Product;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductDao implements ProductDaoReadWrite {
-    private final String dbName;
+import static ru.pavponn.sd.refactoring.sql.ProductSqlCommands.*;
 
-    public ProductDao(String dbName) {
-        this.dbName = dbName;
+public class ProductDao implements ProductDaoRW {
+
+    private final DBConnectionManager connectionManager;
+
+    public ProductDao(DBConnectionManager connectionManager) {
+       this.connectionManager = connectionManager;
     }
 
     @Override
     public List<Product> getAllProducts() {
         try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
+            try (Connection c = connectionManager.getConnection()) {
                 Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
+                ResultSet rs = stmt.executeQuery(getAllProductsSql());
                 List<Product> products = new ArrayList<>();
                 while (rs.next()) {
                     String name = rs.getString("name");
@@ -42,9 +45,9 @@ public class ProductDao implements ProductDaoReadWrite {
     @Override
     public Product getMinPriceProduct() {
         try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
+            try (Connection c = connectionManager.getConnection()) {
                 Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1");
+                ResultSet rs = stmt.executeQuery(getMinPriceProductSql());
 
                 String name = rs.getString("name");
                 long price = rs.getLong("price");
@@ -63,9 +66,9 @@ public class ProductDao implements ProductDaoReadWrite {
     @Override
     public Product getMaxPriceProduct() {
         try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
+            try (Connection c = connectionManager.getConnection()) {
                 Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1");
+                ResultSet rs = stmt.executeQuery(getMaxPriceProductSql());
 
                 String name = rs.getString("name");
                 long price = rs.getLong("price");
@@ -84,9 +87,9 @@ public class ProductDao implements ProductDaoReadWrite {
     @Override
     public long getSumPrices() {
         try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
+            try (Connection c = connectionManager.getConnection()) {
                 Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT SUM(price) FROM PRODUCT");
+                ResultSet rs = stmt.executeQuery(getSumPricesSql());
                 long sum = rs.getLong(1);
                 rs.close();
                 stmt.close();
@@ -101,9 +104,9 @@ public class ProductDao implements ProductDaoReadWrite {
     @Override
     public long getCount() {
         try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
+            try (Connection c = connectionManager.getConnection()) {
                 Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM PRODUCT");
+                ResultSet rs = stmt.executeQuery(getCountSql());
                 long sum = rs.getLong(1);
                 rs.close();
                 stmt.close();
@@ -118,11 +121,9 @@ public class ProductDao implements ProductDaoReadWrite {
     @Override
     public boolean addProduct(Product product) {
         try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
-                String sql = "INSERT INTO PRODUCT " +
-                        "(NAME, PRICE) VALUES (\"" + product.getName() + "\"," + product.getPrice() + ")";
+            try (Connection c = connectionManager.getConnection()) {
                 Statement stmt = c.createStatement();
-                stmt.executeUpdate(sql);
+                stmt.executeUpdate(addProductSql(product.getName(), product.getPrice()));
                 stmt.close();
             } catch (Exception e) {
                 return false;

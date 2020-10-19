@@ -1,7 +1,6 @@
 package ru.pavponn.sd.refactoring.servlet;
 
-import ru.pavponn.sd.refactoring.dao.ProductDao;
-import ru.pavponn.sd.refactoring.dao.ProductDaoReadWrite;
+import ru.pavponn.sd.refactoring.dao.ProductDaoRW;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,14 +14,10 @@ import static ru.pavponn.sd.refactoring.response.ResponseHtmlBuilder.responseBui
  * @author akirakozov
  */
 public class QueryServlet extends HttpServlet {
-    private final ProductDaoReadWrite productDao;
+    private final ProductDaoRW productDao;
 
-    public QueryServlet() {
-        this("test.db");
-    }
-
-    public QueryServlet(String dbName) {
-        this.productDao = new ProductDao(dbName);
+    public QueryServlet(ProductDaoRW productDao) {
+        this.productDao = productDao;
     }
 
     @Override

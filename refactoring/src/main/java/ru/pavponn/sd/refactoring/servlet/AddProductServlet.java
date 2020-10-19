@@ -1,7 +1,6 @@
 package ru.pavponn.sd.refactoring.servlet;
 
-import ru.pavponn.sd.refactoring.dao.ProductDao;
-import ru.pavponn.sd.refactoring.dao.ProductDaoReadWrite;
+import ru.pavponn.sd.refactoring.dao.ProductDaoRW;
 import ru.pavponn.sd.refactoring.models.Product;
 
 import javax.servlet.http.HttpServlet;
@@ -13,14 +12,10 @@ import java.io.IOException;
  * @author akirakozov
  */
 public class AddProductServlet extends HttpServlet {
-    private final ProductDaoReadWrite productDao;
+    private final ProductDaoRW productDao;
 
-    public AddProductServlet() {
-        this("test.db");
-    }
-
-    public AddProductServlet(String dbName) {
-        this.productDao = new ProductDao(dbName);
+    public AddProductServlet(ProductDaoRW productDao) {
+        this.productDao = productDao;
     }
 
     @Override

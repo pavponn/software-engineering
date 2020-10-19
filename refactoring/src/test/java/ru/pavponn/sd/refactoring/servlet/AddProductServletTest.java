@@ -2,10 +2,8 @@ package ru.pavponn.sd.refactoring.servlet;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.pavponn.sd.refactoring.dao.ProductDaoRW;
-import ru.pavponn.sd.refactoring.dbconnection.DBConnectionManager;
 import ru.pavponn.sd.refactoring.models.Product;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 
 import static org.mockito.Mockito.*;
 import static ru.pavponn.sd.refactoring.servlet.TestUtils.mockAddRequest;
@@ -26,7 +23,7 @@ public class AddProductServletTest {
     PrintWriter writer;
 
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         stringWriter = new StringWriter();
         writer = new PrintWriter(stringWriter);
     }

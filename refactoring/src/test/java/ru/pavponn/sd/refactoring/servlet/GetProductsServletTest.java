@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static java.util.Arrays.asList;
@@ -27,7 +26,7 @@ public class GetProductsServletTest {
     PrintWriter writer;
 
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         stringWriter = new StringWriter();
         writer = new PrintWriter(stringWriter);
     }
@@ -35,7 +34,7 @@ public class GetProductsServletTest {
     @Test
     public void shouldShowNoProductsIfEmpty() throws IOException {
         ProductDaoRW productDao = mock(ProductDaoRW.class);
-        when(productDao.getAllProducts()).thenReturn(new ArrayList<Product>());
+        when(productDao.getAllProducts()).thenReturn(new ArrayList<>());
         servlet = new GetProductsServlet(productDao);
         HttpServletRequest request = mockGetProductRequest();
         HttpServletResponse response = mockResponse(writer);
@@ -45,7 +44,7 @@ public class GetProductsServletTest {
     }
 
     @Test
-    public void shouldShowAddedProduct() throws SQLException, IOException {
+    public void shouldShowAddedProduct() throws IOException {
         Product product = new Product("bag", 200);
         ProductDaoRW productDao = mock(ProductDaoRW.class);
         when(productDao.getAllProducts()).thenReturn(singletonList(product));
@@ -61,7 +60,7 @@ public class GetProductsServletTest {
     }
 
     @Test
-    public void shouldShowMultipleAddedProducts() throws SQLException, IOException {
+    public void shouldShowMultipleAddedProducts() throws IOException {
         Product product1 = new Product("bag", 200);
         Product product2 = new Product("iphone12", 1399);
         ProductDaoRW productDao = mock(ProductDaoRW.class);

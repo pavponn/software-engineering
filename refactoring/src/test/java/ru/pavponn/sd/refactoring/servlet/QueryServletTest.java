@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,7 +31,7 @@ public class QueryServletTest {
     Product product2 = new Product(CHP_PRODUCT_NAME, CHP_PRODUCT_PRICE);
 
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         stringWriter = new StringWriter();
         writer = new PrintWriter(stringWriter);
     }

@@ -14,6 +14,8 @@ import ru.pavponn.sd.refactoring.servlet.QueryServlet;
 import java.sql.Connection;
 import java.sql.Statement;
 
+import static ru.pavponn.sd.refactoring.sql.ProductSqlCommands.createProductsTableSql;
+
 /**
  * @author akirakozov
  */
@@ -21,13 +23,8 @@ public class Main {
     public static void main(String[] args) throws Exception {
         DBConnectionManager connectionManager = new DBConnectionManagerImpl("jdbc:sqlite:test.db");
         try (Connection c = connectionManager.getConnection()) {
-            String sql = "CREATE TABLE IF NOT EXISTS PRODUCT" +
-                    "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-                    " NAME           TEXT    NOT NULL, " +
-                    " PRICE          INT     NOT NULL)";
             Statement stmt = c.createStatement();
-
-            stmt.executeUpdate(sql);
+            stmt.executeUpdate(createProductsTableSql());
             stmt.close();
         }
 

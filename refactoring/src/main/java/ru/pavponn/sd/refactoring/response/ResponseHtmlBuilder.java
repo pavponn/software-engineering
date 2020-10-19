@@ -48,7 +48,7 @@ public class ResponseHtmlBuilder {
     }
 
     public ResponseHtmlBuilder addProducts(List<Product> products) {
-        for (Product product: products) {
+        for (Product product : products) {
             addProduct(product);
         }
 

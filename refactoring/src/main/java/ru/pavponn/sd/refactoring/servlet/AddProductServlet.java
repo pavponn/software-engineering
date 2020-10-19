@@ -22,12 +22,8 @@ public class AddProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Product product = new Product(request.getParameter("name"), Long.parseLong(request.getParameter("price")));
         response.setContentType("text/html");
-        if (productDao.addProduct(product)) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println("OK");
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("FAIL");
-        }
+        productDao.addProduct(product);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().println("OK");
     }
 }

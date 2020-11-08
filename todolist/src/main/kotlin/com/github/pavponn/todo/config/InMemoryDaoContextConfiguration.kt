@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 open class InMemoryDaoContextConfiguration {
     @Bean
-    public open fun todoDao(): TodoDao {
-        return TodoInMemoryDao();
+    open fun todoDao(): TodoDao {
+        return TodoInMemoryDao()
     }
 }

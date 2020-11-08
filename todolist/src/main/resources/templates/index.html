@@ -1,0 +1,62 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+    <title>Todos</title>
+</head>
+<body>
+<form method="GET" th:action="@{/}">
+    <button type="submit" class="link-button">HOME</button>
+</form>
+<h3>Todo Lists</h3>
+<table>
+    <th:block th:each="todoList: ${todoLists}">
+        <tr>
+            <td th:text="${todoList.id}"/>
+            <td th:text="${todoList.name}"/>
+            <td>
+                <form method="GET" th:action="@{/todos(todoListId=${todoList.id})}">
+                    <button type="submit" th:name="todoListId" th:value="${todoList.id}" class="link-button">Show</button>
+                </form>
+            </td>
+        </tr>
+    </th:block>
+</table>
+
+<h3>Add new todolist</h3>
+<form method="POST" action="/todolists">
+    <table>
+        <tr>
+            <td><label>Name:</label></td>
+            <td><label><input type="text" th:name="name"/></label></td>
+            <td><input type="submit" text="Submit"/></td>
+        </tr>
+    </table>
+</form>
+
+<h3 th:text="${todoListHeader}"></h3>
+<table>
+    <th:block th:each="todo: ${todos}">
+        <tr>
+            <td th:text="${todo.id}"/>
+            <td th:text="${todo.description}"/>
+            <td th:text="${todo.listId}"/>
+            <!--            <td th:text="${todo.isDone}"/>-->
+        </tr>
+    </th:block>
+</table>
+
+<h3>Add new todo</h3>
+<form method="POST" action="/todos">
+    <table>
+        <tr>
+            <td><label>Description:</label></td>
+            <td><label><input type="text" th:required th:name="description"/></label></td>
+            <td><label>List</label></td>
+            <td><label><input type="number" th:required th:name="listId"/></label></td>
+            <td><input type="submit" text="Submit"/></td>
+        </tr>
+    </table>
+</form>
+
+</body>
+</html>

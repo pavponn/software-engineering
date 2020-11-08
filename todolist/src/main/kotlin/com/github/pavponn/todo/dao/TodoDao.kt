@@ -2,7 +2,6 @@ package com.github.pavponn.todo.dao
 
 import com.github.pavponn.todo.model.Todo
 import com.github.pavponn.todo.model.TodoList
-import com.github.pavponn.todo.model.TodoStatus
 
 /**
  * @author pavponn

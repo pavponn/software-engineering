@@ -4,5 +4,5 @@ package com.github.pavponn.todo.model
  * @author pavponn
  */
 
-data class TodoList(var id: Int, var name: String) {
+data class TodoList(public var id: Int = 0, var name: String = "") {
 }

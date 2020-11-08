@@ -31,11 +31,11 @@ class TodoInMemoryDao : TodoDao {
     }
 
     override fun setAsDone(id: Int) {
-        todos.find { it.id == id }?.isDone = true
+        todos.find { it.id == id }?.done = true
     }
 
     override fun setAsTodo(id: Int) {
-        todos.find { it.id == id }?.isDone = false
+        todos.find { it.id == id }?.done = false
     }
 
     override fun addTodoList(name: String) {

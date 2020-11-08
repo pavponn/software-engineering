@@ -4,10 +4,10 @@ package com.github.pavponn.todo.model
  * @author pavponn
  */
 data class Todo(
-    var id: Int,
-    var description: String,
-    var isDone: Boolean,
-    var listId: Int
+    public var id: Int = 0,
+    public var description: String = "",
+    public var done: Boolean = false,
+    public var listId: Int = 0
 ) {
 
 }

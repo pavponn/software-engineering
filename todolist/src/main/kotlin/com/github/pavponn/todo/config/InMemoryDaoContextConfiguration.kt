@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration
 /**
  * @author pavponn
  */
-@Configuration
 open class InMemoryDaoContextConfiguration {
     @Bean
     open fun todoDao(): TodoDao {

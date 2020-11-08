@@ -9,6 +9,7 @@ import javax.sql.DataSource
 /**
  * @author pavponn
  */
+@Configuration
 open class JdbcDaoContextConfiguration {
 
     @Bean

@@ -2,10 +2,7 @@ package com.github.pavponn.todo.dao
 
 import com.github.pavponn.todo.model.Todo
 import com.github.pavponn.todo.model.TodoList
-import com.github.pavponn.todo.model.TodoStatus
-import jdk.jfr.Description
 import org.springframework.jdbc.core.BeanPropertyRowMapper
-import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.core.support.JdbcDaoSupport
 import javax.sql.DataSource
 
@@ -17,8 +14,8 @@ class TodoJdbcDao(dataSource: DataSource) : JdbcDaoSupport(), TodoDao {
         private const val SQL_TODO_ALL = "select * from Todos"
         private const val SQL_TODO_DELETE = "delete from Todos where id = ?"
         private const val SQL_TODO_DELETE_BY_LIST = "delete from Todos where listId = ?"
-        private const val SQL_TODO_INSERT = "insert into Todos(description, status, listid) values(?,?,?)"
-        private const val SQL_TODO_UPDATE_STATUS = "update todos set status = ? where id = ?"
+        private const val SQL_TODO_INSERT = "insert into Todos(description, done, listid) values(?,?,?)"
+        private const val SQL_TODO_UPDATE_DONE = "update todos set done = ? where id = ?"
         private const val SQL_TODOLIST_ALL = "select * from TodoLists"
         private const val SQL_TODOLIST_INSERT = "insert into TodoLists(name) values(?)"
         private const val SQL_TODOLIST_DELETE = "delete from Todolists where id = ?"
@@ -51,11 +48,11 @@ class TodoJdbcDao(dataSource: DataSource) : JdbcDaoSupport(), TodoDao {
     }
 
     override fun setAsDone(id: Int) {
-        jdbcTemplate?.update(SQL_TODO_UPDATE_STATUS, TodoStatus.DONE, id)
+        jdbcTemplate?.update(SQL_TODO_UPDATE_DONE, true, id)
     }
 
     override fun setAsTodo(id: Int) {
-        jdbcTemplate?.update(SQL_TODO_UPDATE_STATUS, TodoStatus.TODO, id)
+        jdbcTemplate?.update(SQL_TODO_UPDATE_DONE, false, id)
     }
 
     override fun getTodoLists(): List<TodoList> {

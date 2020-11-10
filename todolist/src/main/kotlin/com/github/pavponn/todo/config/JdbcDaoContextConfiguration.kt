@@ -19,12 +19,12 @@ open class JdbcDaoContextConfiguration {
 
     @Bean
     open fun dataSource(): DataSource {
-        val dataSource = DriverManagerDataSource()
-        dataSource.setDriverClassName("org.sqlite.JDBC")
-        dataSource.url = "jdbc:sqlite:todo.db"
-        dataSource.username = ""
-        dataSource.password = ""
-        return dataSource
+        return DriverManagerDataSource().apply {
+            setDriverClassName("org.sqlite.JDBC")
+            url = "jdbc:sqlite:todo.db"
+            username = ""
+            password = ""
+        }
     }
 
 

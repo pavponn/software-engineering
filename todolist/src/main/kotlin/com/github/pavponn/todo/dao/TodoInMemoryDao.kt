@@ -16,6 +16,8 @@ class TodoInMemoryDao : TodoDao {
 
     override fun getTodoLists(): List<TodoList> = todoLists
 
+    override fun getTodoList(id: Int) = todoLists.filter { it.id == id }[0]
+
     override fun addTodo(description: String, listId: Int) {
         val id = (todos.maxByOrNull { it.id }?.id ?: 0) + 1
         val todo = Todo(id, description, false, listId)
@@ -30,12 +32,8 @@ class TodoInMemoryDao : TodoDao {
         todos.removeIf { it.listId == listId }
     }
 
-    override fun setAsDone(id: Int) {
-        todos.find { it.id == id }?.done = true
-    }
-
-    override fun setAsTodo(id: Int) {
-        todos.find { it.id == id }?.done = false
+    override fun updateDone(id: Int, done: Boolean) {
+        todos.find { it.id == id }?.done = done
     }
 
     override fun addTodoList(name: String) {

@@ -12,11 +12,13 @@ import javax.sql.DataSource
 class TodoJdbcDao(dataSource: DataSource) : JdbcDaoSupport(), TodoDao {
     companion object {
         private const val SQL_TODO_ALL = "select * from Todos"
+        private const val SQL_TODO_BY_LIST_ID = "select * from Todos where listId = ?"
         private const val SQL_TODO_DELETE = "delete from Todos where id = ?"
         private const val SQL_TODO_DELETE_BY_LIST = "delete from Todos where listId = ?"
         private const val SQL_TODO_INSERT = "insert into Todos(description, done, listid) values(?,?,?)"
         private const val SQL_TODO_UPDATE_DONE = "update todos set done = ? where id = ?"
         private const val SQL_TODOLIST_ALL = "select * from TodoLists"
+        private const val SQL_TODOLIST_BY_ID = "select * from TodoLists where id = ?"
         private const val SQL_TODOLIST_INSERT = "insert into TodoLists(name) values(?)"
         private const val SQL_TODOLIST_DELETE = "delete from Todolists where id = ?"
     }
@@ -26,14 +28,12 @@ class TodoJdbcDao(dataSource: DataSource) : JdbcDaoSupport(), TodoDao {
     }
 
     override fun getTodos(): List<Todo> {
-        return getTodosByRequest(SQL_TODO_ALL)
+        return getTodosByRequest(SQL_TODO_ALL, emptyArray())
     }
 
     override fun getTodos(listId: Int): List<Todo> {
-        val sql = "select * from Todos where listId = ${listId}"
-        return getTodosByRequest(sql)
+        return getTodosByRequest(SQL_TODO_BY_LIST_ID, arrayOf(listId))
     }
-
 
     override fun addTodo(description: String, listId: Int) {
         jdbcTemplate?.update(SQL_TODO_INSERT, description, false, listId)
@@ -47,16 +47,16 @@ class TodoJdbcDao(dataSource: DataSource) : JdbcDaoSupport(), TodoDao {
         jdbcTemplate?.update(SQL_TODO_DELETE_BY_LIST, listId)
     }
 
-    override fun setAsDone(id: Int) {
-        jdbcTemplate?.update(SQL_TODO_UPDATE_DONE, true, id)
-    }
-
-    override fun setAsTodo(id: Int) {
-        jdbcTemplate?.update(SQL_TODO_UPDATE_DONE, false, id)
+    override fun updateDone(id: Int, done: Boolean) {
+        jdbcTemplate?.update(SQL_TODO_UPDATE_DONE, done, id)
     }
 
     override fun getTodoLists(): List<TodoList> {
-        return getTodoListsByRequest(SQL_TODOLIST_ALL)
+        return getTodoListsByRequest(SQL_TODOLIST_ALL, emptyArray())
+    }
+
+    override fun getTodoList(id: Int): TodoList {
+        return getTodoListsByRequest(SQL_TODOLIST_BY_ID, arrayOf(id))[0]
     }
 
     override fun addTodoList(name: String) {
@@ -67,11 +67,11 @@ class TodoJdbcDao(dataSource: DataSource) : JdbcDaoSupport(), TodoDao {
         jdbcTemplate?.update(SQL_TODOLIST_DELETE, id)
     }
 
-    private fun getTodoListsByRequest(sql: String): List<TodoList> {
-        return jdbcTemplate?.query(sql, BeanPropertyRowMapper(TodoList::class.java)) ?: emptyList()
+    private fun getTodoListsByRequest(sql: String, params: Array<Any>): List<TodoList> {
+        return jdbcTemplate?.query(sql, params, BeanPropertyRowMapper(TodoList::class.java)) ?: emptyList()
     }
 
-    private fun getTodosByRequest(sql: String): List<Todo> {
-        return jdbcTemplate?.query(sql, BeanPropertyRowMapper(Todo::class.java)) ?: emptyList()
+    private fun getTodosByRequest(sql: String, params: Array<Any>): List<Todo> {
+        return jdbcTemplate?.query(sql, params, BeanPropertyRowMapper(Todo::class.java)) ?: emptyList()
     }
 }

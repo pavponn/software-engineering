@@ -18,11 +18,11 @@ public interface TodoDao {
 
     fun deleteTodos(listId: Int)
 
-    fun setAsDone(id: Int)
-
-    fun setAsTodo(id: Int)
+    fun updateDone(id: Int, done: Boolean)
 
     fun getTodoLists(): List<TodoList>
+
+    fun getTodoList(id: Int): TodoList
 
     fun addTodoList(name: String)
 

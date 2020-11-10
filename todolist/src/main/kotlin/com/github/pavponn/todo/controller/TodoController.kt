@@ -67,11 +67,7 @@ class TodoController(val todoDao: TodoDao) {
         @RequestParam("status") status: Boolean,
         request: HttpServletRequest
     ): String {
-        if (status) {
-            todoDao.setAsDone(todoId)
-        } else {
-            todoDao.setAsTodo(todoId)
-        }
+        todoDao.updateDone(todoId, status)
         return redirectToPreviousPage(request)
     }
 

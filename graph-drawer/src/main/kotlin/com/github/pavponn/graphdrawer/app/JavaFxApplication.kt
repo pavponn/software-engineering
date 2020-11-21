@@ -16,10 +16,10 @@ class JavaFxApplication :
     override fun start(primaryStage: Stage) {
         val drawingApi = JavaFxDrawingApi(
             primaryStage,
-            GlobalParams.windowParams.width,
-            GlobalParams.windowParams.height
+            ApplicationParameters.windowParams.width,
+            ApplicationParameters.windowParams.height
         )
-        GlobalParams.drawer(drawingApi).drawGraph()
+        ApplicationParameters.drawer(drawingApi).drawGraph()
         drawingApi.show()
     }
 }

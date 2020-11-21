@@ -19,20 +19,20 @@ class AwtApplication() :
                 }
             }
         )
-        setSize(GlobalParams.windowParams.width, GlobalParams.windowParams.height)
+        setSize(ApplicationParameters.windowParams.width, ApplicationParameters.windowParams.height)
         isVisible = true
     }
 
     override fun paint(graphics: Graphics) {
         super.paint(graphics)
         val graphics2D = graphics as Graphics2D
-        graphics2D.clearRect(0, 0, GlobalParams.windowParams.width, GlobalParams.windowParams.height)
+        graphics2D.clearRect(0, 0, ApplicationParameters.windowParams.width, ApplicationParameters.windowParams.height)
         val drawingApi = AwtDrawingApi(
             graphics2D,
-            GlobalParams.windowParams.width,
-            GlobalParams.windowParams.height
+            ApplicationParameters.windowParams.width,
+            ApplicationParameters.windowParams.height
         )
-        GlobalParams.drawer(drawingApi).drawGraph()
+        ApplicationParameters.drawer(drawingApi).drawGraph()
         isResizable = false
     }
 }

@@ -4,7 +4,7 @@ import com.github.pavponn.graphdrawer.graph.GraphParser
 import com.github.pavponn.graphdrawer.app.*
 
 fun main(args: Array<String>) {
-    GlobalParams.windowParams = WindowParams(1200, 800)
+    ApplicationParameters.windowParams = WindowParams(1200, 800)
     try {
         require(args.size == 2) { "Usage: <drawing api> <graph type>" }
         val type = when (args[1]) {
@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
             "list" -> GraphType.LIST
             else -> throw IllegalArgumentException("Wrong graph type")
         }
-        GlobalParams.drawer = when (type) {
+        ApplicationParameters.drawer = when (type) {
             GraphType.LIST -> GraphParser().parseListGraph()
             GraphType.MATRIX -> GraphParser().parseMatrixGraph()
         }

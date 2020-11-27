@@ -24,21 +24,18 @@ abstract class Graph(private val drawingApi: DrawingApi) {
     private fun drawCircleByIndex(index: Int) {
         val vertexesCount = getVertexesCount()
         val radius = sqrt(min(drawingApi.drawingAreaHeight, drawingApi.drawingAreaWidth).toDouble()).toInt() / 2
-        for (i in 0 until vertexesCount) {
-            val vertexCenter = getVertexCenterByIndex(i)
-            val vertexCircle = Circle(vertexCenter, radius)
-            drawingApi.drawVertexCircle(vertexCircle)
-        }
+        val vertexCenter = getVertexCenterByIndex(index)
+        val vertexCircle = Circle(vertexCenter, radius)
+        drawingApi.drawVertexCircle(vertexCircle)
+
     }
 
     private fun drawEdges() {
-        val center = getCenterCircle()
         val edges = getEdges()
         for (edge in edges) {
             if (edge.from != edge.to) {
                 drawEdgeByIndexes(edge.from.index, edge.to.index)
             }
-
         }
     }
 

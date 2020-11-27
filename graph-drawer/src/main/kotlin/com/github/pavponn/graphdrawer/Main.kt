@@ -1,27 +1,13 @@
 package com.github.pavponn.graphdrawer
 
-import com.github.pavponn.graphdrawer.graph.GraphParser
 import com.github.pavponn.graphdrawer.app.*
 
 fun main(args: Array<String>) {
-    ApplicationParameters.windowParams = WindowParams(1200, 800)
+    AppParams.windowParams = WindowParams(1200, 800)
     try {
         require(args.size == 2) { "Usage: <drawing api> <graph type>" }
-        val type = when (args[1]) {
-            "matrix" -> GraphType.MATRIX
-            "list" -> GraphType.LIST
-            else -> throw IllegalArgumentException("Wrong graph type")
-        }
-        ApplicationParameters.drawer = when (type) {
-            GraphType.LIST -> GraphParser().parseListGraph()
-            GraphType.MATRIX -> GraphParser().parseMatrixGraph()
-        }
-        val application = when (args[0]) {
-            "javafx" -> JavaFxApplication()
-            "awt" -> AwtApplication()
-            else -> throw IllegalArgumentException("Wrong drawing API: either 'javafx' or awt")
-        }
-        application.startApplication()
+        AppParams.drawer = GraphType.valueOf(args[1]).parseGraph()
+        AppType.valueOf(args[0]).getApp().start()
     } catch (e: IllegalArgumentException) {
         println("Incorrect usage of program: ${e.message}")
     }

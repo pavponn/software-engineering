@@ -8,10 +8,9 @@ import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import kotlin.system.exitProcess
 
-class AwtApplication() :
-    Frame(),
-    DrawingApplication {
-    override fun startApplication() {
+class AwtApp : Frame(), GraphApp {
+
+    override fun start() {
         addWindowListener(
             object : WindowAdapter() {
                 override fun windowClosing(e: WindowEvent?) {
@@ -19,20 +18,16 @@ class AwtApplication() :
                 }
             }
         )
-        setSize(ApplicationParameters.windowParams.width, ApplicationParameters.windowParams.height)
+        setSize(AppParams.windowParams.width, AppParams.windowParams.height)
         isVisible = true
     }
 
     override fun paint(graphics: Graphics) {
         super.paint(graphics)
         val graphics2D = graphics as Graphics2D
-        graphics2D.clearRect(0, 0, ApplicationParameters.windowParams.width, ApplicationParameters.windowParams.height)
-        val drawingApi = AwtDrawingApi(
-            graphics2D,
-            ApplicationParameters.windowParams.width,
-            ApplicationParameters.windowParams.height
-        )
-        ApplicationParameters.drawer(drawingApi).drawGraph()
+        graphics2D.clearRect(0, 0, width, height)
+        val drawingApi = AwtDrawingApi(graphics2D, width, height)
+        AppParams.drawer(drawingApi).drawGraph()
         isResizable = false
     }
 }

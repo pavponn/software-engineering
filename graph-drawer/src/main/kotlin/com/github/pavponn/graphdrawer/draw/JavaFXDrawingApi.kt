@@ -9,7 +9,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-class JavaFxDrawingApi(
+class JavaFXDrawingApi(
     private val stage: Stage,
     override val drawingAreaWidth: Int,
     override val drawingAreaHeight: Int

@@ -6,9 +6,9 @@ interface DrawingApi {
 
     val drawingAreaHeight: Int
 
-    fun drawVertexCircle(circle: Circle)
+    fun drawCircle(circle: Circle)
 
-    fun drawEdgeArrow(from: Point, to: Point)
+    fun drawArrow(from: Point, to: Point)
 
     fun show() {}
 }

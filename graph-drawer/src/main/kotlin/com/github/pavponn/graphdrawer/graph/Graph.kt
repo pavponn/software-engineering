@@ -11,22 +11,21 @@ import kotlin.math.sqrt
 abstract class Graph(private val drawingApi: DrawingApi) {
 
     fun drawGraph() {
-        drawCircles()
+        drawVertexes()
         drawEdges()
     }
 
-    private fun drawCircles() {
+    private fun drawVertexes() {
         for (i in 0 until getVertexesCount()) {
             drawCircleByIndex(i)
         }
     }
 
     private fun drawCircleByIndex(index: Int) {
-        val vertexesCount = getVertexesCount()
         val radius = sqrt(min(drawingApi.drawingAreaHeight, drawingApi.drawingAreaWidth).toDouble()).toInt() / 2
         val vertexCenter = getVertexCenterByIndex(index)
         val vertexCircle = Circle(vertexCenter, radius)
-        drawingApi.drawVertexCircle(vertexCircle)
+        drawingApi.drawCircle(vertexCircle)
 
     }
 
@@ -42,7 +41,7 @@ abstract class Graph(private val drawingApi: DrawingApi) {
     private fun drawEdgeByIndexes(fromIndex: Int, toIndex: Int) {
         val fromPoint = getVertexCenterByIndex(fromIndex)
         val toPoint = getVertexCenterByIndex(toIndex)
-        drawingApi.drawEdgeArrow(fromPoint, toPoint)
+        drawingApi.drawArrow(fromPoint, toPoint)
     }
 
     private fun getCenterCircle(): Circle {

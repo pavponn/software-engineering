@@ -17,7 +17,7 @@ class JavaFXDrawingApi(
     private val canvas = Canvas(drawingAreaWidth.toDouble(), drawingAreaHeight.toDouble())
     private val graphicsContext = canvas.graphicsContext2D!!
 
-    override fun drawVertexCircle(circle: Circle) {
+    override fun drawCircle(circle: Circle) {
         graphicsContext.fillOval(
             (circle.center.x - circle.radius).toDouble(),
             (circle.center.y - circle.radius).toDouble(),
@@ -34,7 +34,7 @@ class JavaFXDrawingApi(
         stage.show()
     }
 
-    override fun drawEdgeArrow(from: Point, to: Point) {
+    override fun drawArrow(from: Point, to: Point) {
         graphicsContext.strokeLine(from.x.toDouble(), from.y.toDouble(), to.x.toDouble(), to.y.toDouble())
         drawArrowHead(from, to)
     }

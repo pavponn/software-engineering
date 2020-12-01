@@ -13,7 +13,7 @@ class AwtDrawingApi(
     override val drawingAreaHeight: Int
 ) : DrawingApi {
 
-    override fun drawVertexCircle(circle: Circle) {
+    override fun drawCircle(circle: Circle) {
         graphics2D.fill(
             Ellipse2D.Double(
                 (circle.center.x - circle.radius).toDouble(),
@@ -24,7 +24,7 @@ class AwtDrawingApi(
         )
     }
 
-    override fun drawEdgeArrow(from: Point, to: Point) {
+    override fun drawArrow(from: Point, to: Point) {
         graphics2D.drawLine(from.x, from.y, to.x, to.y)
         drawArrowHead(to, from)
     }

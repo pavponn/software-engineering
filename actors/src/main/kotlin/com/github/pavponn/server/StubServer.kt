@@ -8,7 +8,7 @@ import kotlin.collections.ArrayList
 class StubServer(
     private val searchEngine: SearchEngine,
     private val responseNumber: Int,
-) : DelayableSearchClient {
+) : DelayableSearchService {
 
     constructor(searchEngine: SearchEngine, responseNumber: Int, vararg delays: Int)
             : this(searchEngine, responseNumber) {

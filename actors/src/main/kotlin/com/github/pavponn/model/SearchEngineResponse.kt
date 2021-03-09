@@ -8,6 +8,6 @@ class SearchEngineResponse(
 
     override fun toString(): String {
 
-        return "\n$searchEngine: {\n${results.map { "\t$it\n" }.joinToString(separator = "")}}"
+        return "\n$searchEngine: {\n${results.joinToString(separator = "") { "\t$it\n" }}}"
     }
 }

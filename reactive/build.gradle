@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.typesafe', name: 'config', version: '1.4.0'
+    compile group: 'org.mongodb', name: 'mongodb-driver-rx', version: '1.5.0'
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.2'
+    compile group: 'io.reactivex', name: 'rxnetty-common', version: '0.5.3'
+    compile group: 'io.reactivex', name: 'rxnetty-http', version: '0.5.3'
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    implementation group: 'io.netty', name: 'netty-all', version: '4.1.29.Final'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}

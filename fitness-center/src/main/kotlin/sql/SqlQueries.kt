@@ -51,12 +51,12 @@ object SqlQueries {
 
     val getMaxUserId =
         """
-            select maxId from Keys where entity = 'User'
+            select maxId as maxId from Keys where entity = 'User'
         """.trimIndent()
 
     val updateMaxIdForUsers =
         """
-            update maxId set maxId = ?
+            update Keys set maxId = ?
             where entity = 'User' 
             and maxId = ?
         """.trimIndent()

@@ -30,7 +30,8 @@ class DatabaseAdminCommandsDao(private val connection: SuspendingConnection) : A
             val idInfo = idInfoRef.get()
             if (idInfo.maxUsedId == idInfo.maxId) {
                 val curMaxId = if (idInfo.maxUsedId == -1L) {
-                    transaction.sendQuery(SqlQueries.getMaxUserId).rows[0].getLong("maxId")!!
+                    val rows = transaction.sendPreparedStatement(SqlQueries.getMaxUserId).rows
+                    rows[0].getLong("maxid")!!
                 } else {
                     idInfo.maxId
                 }

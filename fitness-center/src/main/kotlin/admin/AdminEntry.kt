@@ -34,9 +34,14 @@ fun main() = runBlocking {
                 if (name == null) {
                     call.badRequest()
                 } else {
-                    val command = AddUserCommand(name)
-                    val result = commandsHandler.handle(command)
-                    call.respondText(result)
+                    try {
+                        val command = AddUserCommand(name)
+                        val result = commandsHandler.handle(command)
+                        call.respondText(result)
+                    } catch (e: Exception) {
+                        call.error(e.message)
+                    }
+
                 }
             }
             post("/admin/subscription") {
@@ -61,9 +66,14 @@ fun main() = runBlocking {
                 if (userId == null) {
                     call.badRequest()
                 } else {
-                    val query = GetUserInfoQuery(userId)
-                    val result = queriesHandler.handle(query)
-                    call.respondText(result)
+                    try {
+                        val query = GetUserInfoQuery(userId)
+                        val result = queriesHandler.handle(query)
+                        call.respondText(result)
+                    } catch (e: Exception) {
+                        call.error(e.message)
+                    }
+
                 }
             }
         }

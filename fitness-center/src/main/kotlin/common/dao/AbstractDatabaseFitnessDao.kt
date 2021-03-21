@@ -13,8 +13,8 @@ abstract class AbstractDatabaseFitnessDao {
             Pair(null, null)
         } else {
             val name = result[0].getString("name")!!
-            val subscriptionEndTime = result[0].getAs<Instant>("endTime")
-            val eventId = result[0].getLong("eventId")
+            val subscriptionEndTime = result[0].getAs<Instant>("endtime")
+            val eventId = result[0].getLong("eventid")
             Pair(User(userId, name, subscriptionEndTime), eventId)
         }
     }

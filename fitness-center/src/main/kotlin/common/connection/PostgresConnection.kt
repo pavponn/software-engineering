@@ -9,7 +9,7 @@ object PostgresConnection : Connection {
         return PostgreSQLConnectionBuilder.createConnectionPool {
             host = "localhost"
             database = "fitness"
-            username = "postgres"
+            username = "pavel"
             port = 5432
         }.asSuspending
     }

@@ -23,12 +23,12 @@ fun main(): Unit = runBlocking {
     embeddedServer(Netty, port = 2121) {
         routing {
             post("/turnstile/enter") {
-                val userId = call.request.queryParameters["userId"]?.toLong()
-                if (userId == null) {
+                val memberId = call.request.queryParameters["memberId"]?.toLong()
+                if (memberId == null) {
                     call.badRequest()
                 } else {
                     try {
-                        val command = EnterCommand(userId, clock.now())
+                        val command = EnterCommand(memberId, clock.now())
                         val result = commandsHandler.handle(command)
                         call.respondText(result)
                     } catch (e: Exception) {
@@ -38,12 +38,12 @@ fun main(): Unit = runBlocking {
                 }
             }
             post("/turnstile/exit") {
-                val userId = call.request.queryParameters["userId"]?.toLong()
-                if (userId == null) {
+                val memberId = call.request.queryParameters["memberId"]?.toLong()
+                if (memberId == null) {
                     call.badRequest()
                 } else {
                     try {
-                        val command = ExitCommand(userId, clock.now())
+                        val command = ExitCommand(memberId, clock.now())
                         val result = commandsHandler.handle(command)
                         call.respondText(result)
                     } catch (e: Exception) {

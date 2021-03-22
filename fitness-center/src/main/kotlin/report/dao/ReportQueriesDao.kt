@@ -1,8 +1,10 @@
 package report.dao
 
-import common.model.UserReport
+import common.model.MemberReport
 
 interface ReportQueriesDao {
 
-    suspend fun getUserReports(): List<Pair<UserReport, Long>>
+    suspend fun getMemberReports(): List<Pair<MemberReport, Long>>
+
+    suspend fun getMemberEventsFromEvent(memberId: Long, fromEventId: Long): Pair<MemberReport, Long>
 }

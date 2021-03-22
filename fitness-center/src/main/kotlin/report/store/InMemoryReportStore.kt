@@ -1,43 +1,46 @@
 package report.store
 
-import com.github.jasync.sql.db.SuspendingConnection
-import common.model.UserReport
+import common.model.MemberReport
 import report.dao.ReportQueriesDao
-import sql.SqlQueries
 import java.time.Duration
-import java.time.Instant
-import java.time.LocalDate
-import java.time.Period
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.max
 
 class InMemoryReportStore(private val dao: ReportQueriesDao) : ReportStore {
-    private val store = ConcurrentHashMap<Long, Pair<UserReport, Long>>()
+    private val store = ConcurrentHashMap<Long, Pair<MemberReport, Long>>()
 
     override suspend fun initializeStore() {
-        val stats = dao.getUserReports()
+        val stats = dao.getMemberReports()
         for (data in stats) {
-            store[data.first.userId] = data
+            store[data.first.memberId] = data
         }
     }
 
-    override fun getUserReport(userId: Long): UserReport? {
-        return store[userId]?.first
-    }
-
-    override fun addVisit(userId: Long, startTime: Instant, endTime: Instant, exitEventId: Long) {
-        val period = Duration.between(LocalDate.from(startTime), LocalDate.from(endTime))
-        store.compute(userId) { _, data ->
-            if (data == null) {
-                (UserReport(userId, 1, period) to exitEventId)
-            } else {
-                val (report, lastExitEventId) = data
-                if (exitEventId <= lastExitEventId) {
-                    data
-                } else {
-                    val updatedReport = UserReport(userId, report.totalVisits + 1, report.totalTime + period)
-                    Pair(updatedReport, exitEventId)
-                }
-            }
+    override suspend fun updateStore(memberId: Long) {
+        val fromEventId = if (store[memberId] == null) {
+            -1
+        } else {
+            store[memberId]!!.second
+        }
+        val reportUpdate = dao.getMemberEventsFromEvent(memberId, fromEventId)
+        if (store[memberId] == null) {
+            store[memberId] = reportUpdate
+        } else {
+            val oldReport = store[memberId]!!
+            var durationSum = Duration.ZERO
+            durationSum = durationSum.plus(oldReport.first.totalTime)
+            durationSum = durationSum.plus(reportUpdate.first.totalTime)
+            store[memberId] =
+                Pair(
+                    MemberReport(
+                        oldReport.first.memberId,
+                        oldReport.first.totalVisits + reportUpdate.first.totalVisits,
+                        durationSum
+                    ),
+                    max(oldReport.second, reportUpdate.second)
+                )
         }
     }
+
+    override suspend fun getMemberReport(memberId: Long): MemberReport? = store[memberId]?.first
 }

@@ -1,8 +1,8 @@
 package admin.dao
 
-import common.model.User
+import common.model.Member
 
 interface AdminQueriesDao {
 
-    suspend fun getUserInfo(userId: Long): User?
+    suspend fun getMemberInfo(memberId: Long): Member?
 }

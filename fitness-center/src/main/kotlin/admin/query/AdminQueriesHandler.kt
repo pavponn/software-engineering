@@ -6,13 +6,16 @@ import common.query.Query
 import common.query.UnknownQueryException
 
 class AdminQueriesHandler(private val dao: AdminQueriesDao): QueriesHandler {
+
+
+
     override suspend fun handle(query: Query) = when(query) {
-        is GetUserInfoQuery -> {
-            val user = dao.getUserInfo(query.userId)
-            if (user == null) {
-                "No such user with id=${query.userId}"
+        is GetMemberInfoQuery -> {
+            val member = dao.getMemberInfo(query.memberId)
+            if (member == null) {
+                "No such member with id=${query.memberId}"
             } else {
-                "$user"
+                "$member"
             }
         }
         else -> throw UnknownQueryException(query)

@@ -1,12 +1,12 @@
 package admin
 
-import admin.command.AddUserCommand
+import admin.command.AddMemberCommand
 import admin.command.AdminCommandsHandler
 import admin.command.RenewSubscriptionCommand
 import admin.dao.DatabaseAdminCommandsDao
 import admin.dao.DatabaseAdminQueriesDao
 import admin.query.AdminQueriesHandler
-import admin.query.GetUserInfoQuery
+import admin.query.GetMemberInfoQuery
 import common.clock.Clock
 import common.clock.NormalClock
 import common.connection.PostgresConnection
@@ -29,13 +29,13 @@ fun main() = runBlocking {
     val queriesHandler = AdminQueriesHandler(queriesDao)
     embeddedServer(Netty, port = 2122) {
         routing {
-            post("/admin/user") {
+            post("/admin/member") {
                 val name = call.request.queryParameters["name"]
                 if (name == null) {
                     call.badRequest()
                 } else {
                     try {
-                        val command = AddUserCommand(name)
+                        val command = AddMemberCommand(name)
                         val result = commandsHandler.handle(command)
                         call.respondText(result)
                     } catch (e: Exception) {
@@ -45,14 +45,14 @@ fun main() = runBlocking {
                 }
             }
             post("/admin/subscription") {
-                val userId = call.request.queryParameters["userId"]?.toLong()
+                val memberId = call.request.queryParameters["memberId"]?.toLong()
                 val endTimeString = call.request.queryParameters["endTime"]
-                if (userId == null || endTimeString == null) {
+                if (memberId == null || endTimeString == null) {
                     call.badRequest()
                 } else {
                     try {
                         val endTime = Instant.parse(endTimeString)
-                        val command = RenewSubscriptionCommand(userId, endTime)
+                        val command = RenewSubscriptionCommand(memberId, endTime)
                         val result = commandsHandler.handle(command)
                         call.respondText(result)
                     } catch (e: Exception) {
@@ -61,13 +61,13 @@ fun main() = runBlocking {
 
                 }
             }
-            get("/admin/user/{userId}") {
-                val userId = call.parameters["userId"]?.toLong()
-                if (userId == null) {
+            get("/admin/member/{memberId}") {
+                val memberId = call.parameters["memberId"]?.toLong()
+                if (memberId == null) {
                     call.badRequest()
                 } else {
                     try {
-                        val query = GetUserInfoQuery(userId)
+                        val query = GetMemberInfoQuery(memberId)
                         val result = queriesHandler.handle(query)
                         call.respondText(result)
                     } catch (e: Exception) {

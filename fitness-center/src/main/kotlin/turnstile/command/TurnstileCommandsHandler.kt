@@ -8,54 +8,31 @@ import io.ktor.client.request.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import turnstile.dao.TurnstileCommandsDao
-import java.lang.Exception
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-
-import java.util.Locale
-
-import java.time.format.FormatStyle
 
 
 class TurnstileCommandsHandler(private val dao: TurnstileCommandsDao) : CommandsHandler {
-
-    val formatter: DateTimeFormatter = DateTimeFormatter
-        .ofLocalizedDateTime(FormatStyle.SHORT)
-        .withLocale(Locale.UK)
-        .withZone(ZoneId.systemDefault())
-
     override suspend fun handle(command: Command): String = when (command) {
         is EnterCommand -> {
-            dao.enter(command.userId, command.time)
-            "User(id=${command.userId}) entered"
+            dao.enter(command.memberId, command.time)
+            "Member(id=${command.memberId}) entered"
         }
         is ExitCommand -> {
-            val (startTime, eventId) = dao.exit(command.userId, command.time)
-
-            val params = mapOf<String, String>(
-                "userId" to "${command.userId}",
-                "startTime" to formatter.format(startTime),
-                "endTime" to formatter.format(command.time),
-                "eventId" to "$eventId"
-            )
+            dao.exit(command.memberId, command.time)
             GlobalScope.launch {
                 val response = try {
-                    sendVisitRequest(params)
+                    sendVisitRequest(command.memberId)
                 } catch (e: Exception) {
-                    "ERROR: ${e.message}"
+                    "Error: ${e.message}"
                 }
-                println("Response for exit request: $response")
+                println("Response for update request: $response")
             }
-            "User(id=${command.userId}) exited"
+            "Member(id=${command.memberId}) exited"
         }
         else -> throw UnknownCommandException(command)
     }
 
-    private suspend fun sendVisitRequest(params: Map<String, String>): String {
-        val url = "http://localhost:2020/report/visit?" +
-                params.map { "${it.key}=${it.value}" }
-                    .joinToString("&")
+    private suspend fun sendVisitRequest(memberId: Long): String {
+        val url = "http://localhost:2020/report/update/$memberId"
         println("Request url: $url")
         return HttpClient().post(url)
     }

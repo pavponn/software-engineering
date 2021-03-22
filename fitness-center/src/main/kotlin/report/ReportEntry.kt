@@ -10,33 +10,36 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
-import report.command.AddVisitCommand
 import report.command.ReportCommandsHandler
-import report.dao.DatabaseReportCommandsDao
+import report.command.UpdateStoreForMemberCommand
 import report.dao.DatabaseReportQueriesDao
-import report.query.GetUserStatsQuery
+import report.query.GetMemberStatsQuery
 import report.query.ReportQueriesHandler
 import report.store.InMemoryReportStore
-import java.lang.Exception
-import java.time.Instant
+import kotlin.Exception
 
 fun main(): Unit = runBlocking {
     val clock: Clock = NormalClock()
     val connection = PostgresConnection.getConnection()
     val queriesDao = DatabaseReportQueriesDao(connection)
     val reportStore = InMemoryReportStore(queriesDao)
+    val commandsHandler = ReportCommandsHandler(reportStore)
     val queriesHandler = ReportQueriesHandler(reportStore)
-    val commandsDao = DatabaseReportCommandsDao(connection)
-    val commandsHandler = ReportCommandsHandler(commandsDao)
+    try {
+        reportStore.initializeStore()
+    } catch (e: Exception) {
+        println(e.message)
+    }
+
     embeddedServer(Netty, port = 2020) {
         routing {
-            get("/report/stats/{userId}") {
-                val userId = call.parameters["userId"]?.toLong()
-                if (userId == null) {
+            get("/report/stats/{memberId}") {
+                val memberId = call.parameters["memberId"]?.toLong()
+                if (memberId == null) {
                     call.badRequest()
                 } else {
                     try {
-                        val query = GetUserStatsQuery(userId)
+                        val query = GetMemberStatsQuery(memberId)
                         val result = queriesHandler.handle(query)
                         call.respondText(result)
                     } catch (e: Exception) {
@@ -44,18 +47,13 @@ fun main(): Unit = runBlocking {
                     }
                 }
             }
-            post("/report/visit") {
-                val userId = call.request.queryParameters["userId"]?.toLong()
-                val eventId = call.request.queryParameters["eventId"]?.toLong()
-                val startTimeString = call.request.queryParameters["startTime"]
-                val endTimeString = call.request.queryParameters["endTime"]
-                if (userId == null || eventId == null || startTimeString == null || endTimeString == null) {
+            post("/report/update/{memberId}") {
+                val memberId = call.parameters["memberId"]?.toLong()
+                if (memberId == null) {
                     call.badRequest()
                 } else {
                     try {
-                        val startTime = Instant.parse(startTimeString)
-                        val endTime = Instant.parse(startTimeString)
-                        val command = AddVisitCommand(userId, startTime, endTime, eventId)
+                        val command = UpdateStoreForMemberCommand(memberId)
                         val result = commandsHandler.handle(command)
                         call.respondText(result)
                     } catch (e: Exception) {

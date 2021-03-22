@@ -1,13 +1,13 @@
 package report.store
 
-import common.model.UserReport
+import common.model.MemberReport
 import java.time.Instant
 
 interface ReportStore {
 
     suspend fun initializeStore()
 
-    fun getUserReport(userId: Long): UserReport?
+    suspend fun getMemberReport(memberId: Long): MemberReport?
 
-    fun addVisit(userId: Long, startTime: Instant, endTime: Instant, exitEventId: Long)
+    suspend fun updateStore(memberId: Long)
 }

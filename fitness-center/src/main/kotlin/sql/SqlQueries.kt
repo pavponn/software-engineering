@@ -44,9 +44,17 @@ object SqlQueries {
             select userId,
                 count(1)                  AS TotalVisits,
                 sum(exitTime - enterTime) AS TotalTime,
-                max(exitId)               AS MaxExitId
+                max(exitId)               AS LastExitId
             from Exits join Enters using (userId, num)
             group by userId
+        """.trimIndent()
+
+    val getUserEventsNew =
+        """
+           select eventId, eventType, eventTime 
+           from TurnstileEvents where 
+           userId = ? 
+           and eventId > ?
         """.trimIndent()
 
     val getMaxUserId =
@@ -81,6 +89,5 @@ object SqlQueries {
             insert into SubscriptionEvents (userId, eventId, endTime)
             values (?, ?, ?)
         """.trimIndent()
-
 
 }

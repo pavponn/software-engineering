@@ -6,22 +6,23 @@ import sql.SqlQueries
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 
-class DatabaseAdminCommandsDao(private val connection: SuspendingConnection) : AbstractDatabaseFitnessDao(), AdminCommandsDao {
+class DatabaseAdminCommandsDao(private val connection: SuspendingConnection) : AbstractDatabaseFitnessDao(),
+    AdminCommandsDao {
 
     data class IdInfo(val maxUsedId: Long, val maxId: Long)
 
     private val idInfoRef: AtomicReference<IdInfo> = AtomicReference(IdInfo(-1, -1))
 
-    override suspend fun addUser(name: String): Long = connection.inTransaction {
+    override suspend fun addMember(name: String): Long = connection.inTransaction {
         val newId = getId(it)
         it.sendPreparedStatement(SqlQueries.addUser, listOf(newId, name))
         newId
     }
 
-    override suspend fun renewSubscription(userId: Long, endTime: Instant) = connection.inTransaction {
-        val (_, eventId) = getUser(it, userId)
+    override suspend fun renewSubscription(memberId: Long, endTime: Instant) = connection.inTransaction {
+        val (_, eventId) = getMember(it, memberId)
         val newEventId = (eventId ?: 0) + 1
-        it.sendPreparedStatement(SqlQueries.renewSubscription, listOf(userId, newEventId, endTime))
+        it.sendPreparedStatement(SqlQueries.renewSubscription, listOf(memberId, newEventId, endTime))
         Unit
     }
 
@@ -37,7 +38,9 @@ class DatabaseAdminCommandsDao(private val connection: SuspendingConnection) : A
                 }
                 val nextMaxId = curMaxId + 100
                 transaction.sendPreparedStatement(SqlQueries.updateMaxIdForUsers, listOf(nextMaxId, curMaxId))
-                return curMaxId + 1
+                if (idInfoRef.compareAndSet(idInfo, IdInfo(curMaxId + 1, nextMaxId))) {
+                    return curMaxId + 1
+                }
             } else {
                 val resultId = idInfo.maxUsedId + 1
                 if (idInfoRef.compareAndSet(idInfo, IdInfo(resultId, idInfo.maxId))) {

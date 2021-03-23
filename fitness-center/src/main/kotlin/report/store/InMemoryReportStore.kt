@@ -1,6 +1,6 @@
 package report.store
 
-import common.model.MemberReport
+import base.model.MemberReport
 import report.dao.ReportQueriesDao
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap

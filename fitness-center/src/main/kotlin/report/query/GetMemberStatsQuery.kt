@@ -1,5 +1,5 @@
 package report.query
 
-import common.query.Query
+import base.query.Query
 
 data class GetMemberStatsQuery(val memberId: Long) : Query

@@ -1,5 +1,5 @@
 package admin.command
 
-import common.command.Command
+import base.command.Command
 
 data class AddMemberCommand(val name: String) : Command

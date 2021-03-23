@@ -1,21 +1,16 @@
 package turnstile.dao
 
 import com.github.jasync.sql.db.SuspendingConnection
-import common.dao.AbstractDatabaseFitnessDao
-import common.utils.toInstant
+import base.dao.AbstractDatabaseFitnessDao
+import base.model.TurnstileEvent
+import base.model.TurnstileEventType
+import base.utils.toInstant
 import org.joda.time.LocalDateTime
-import sql.SqlQueries
+import base.sql.SqlQueries
 import java.time.Instant
 
 class DatabaseTurnstileCommandsDao(private val connection: SuspendingConnection) : AbstractDatabaseFitnessDao(),
     TurnstileCommandsDao {
-
-    private data class TurnstileEvent(val type: TurnstileEventType, val time: Instant)
-
-    private enum class TurnstileEventType {
-        ENTER,
-        EXIT
-    }
 
     override suspend fun enter(memberId: Long, time: Instant) = connection.inTransaction {
         val (member, _) = getMember(it, memberId)

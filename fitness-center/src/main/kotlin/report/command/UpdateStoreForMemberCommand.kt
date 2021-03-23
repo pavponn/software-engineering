@@ -1,5 +1,5 @@
 package report.command
 
-import common.command.Command
+import base.command.Command
 
 data class UpdateStoreForMemberCommand(val memberId: Long): Command

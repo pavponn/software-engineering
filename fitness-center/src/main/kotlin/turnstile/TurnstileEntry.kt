@@ -1,8 +1,8 @@
 package turnstile
 
-import common.clock.Clock
-import common.clock.NormalClock
-import common.connection.PostgresConnection
+import base.clock.Clock
+import base.clock.NormalClock
+import base.connection.PostgresConnection
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -12,14 +12,14 @@ import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
 import turnstile.command.EnterCommand
 import turnstile.command.ExitCommand
-import turnstile.command.TurnstileCommandsHandler
+import turnstile.command.TurnstileCommandsRouter
 import turnstile.dao.DatabaseTurnstileCommandsDao
 
 fun main(): Unit = runBlocking {
     val clock: Clock = NormalClock()
     val connection = PostgresConnection.getConnection()
     val commandsDao = DatabaseTurnstileCommandsDao(connection)
-    val commandsHandler = TurnstileCommandsHandler(commandsDao)
+    val commandsHandler = TurnstileCommandsRouter(commandsDao)
     embeddedServer(Netty, port = 2121) {
         routing {
             post("/turnstile/enter") {
@@ -29,7 +29,7 @@ fun main(): Unit = runBlocking {
                 } else {
                     try {
                         val command = EnterCommand(memberId, clock.now())
-                        val result = commandsHandler.handle(command)
+                        val result = commandsHandler.route(command)
                         call.respondText(result)
                     } catch (e: Exception) {
                         call.error(e.message)
@@ -44,7 +44,7 @@ fun main(): Unit = runBlocking {
                 } else {
                     try {
                         val command = ExitCommand(memberId, clock.now())
-                        val result = commandsHandler.handle(command)
+                        val result = commandsHandler.route(command)
                         call.respondText(result)
                     } catch (e: Exception) {
                         call.error(e.message)

@@ -1,8 +1,8 @@
 package report
 
-import common.clock.Clock
-import common.clock.NormalClock
-import common.connection.PostgresConnection
+import base.clock.Clock
+import base.clock.NormalClock
+import base.connection.PostgresConnection
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -10,11 +10,11 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
-import report.command.ReportCommandsHandler
+import report.command.ReportCommandsRouter
 import report.command.UpdateStoreForMemberCommand
 import report.dao.DatabaseReportQueriesDao
 import report.query.GetMemberStatsQuery
-import report.query.ReportQueriesHandler
+import report.query.ReportQueriesRouter
 import report.store.InMemoryReportStore
 import kotlin.Exception
 
@@ -23,8 +23,8 @@ fun main(): Unit = runBlocking {
     val connection = PostgresConnection.getConnection()
     val queriesDao = DatabaseReportQueriesDao(connection)
     val reportStore = InMemoryReportStore(queriesDao)
-    val commandsHandler = ReportCommandsHandler(reportStore)
-    val queriesHandler = ReportQueriesHandler(reportStore)
+    val commandsHandler = ReportCommandsRouter(reportStore)
+    val queriesHandler = ReportQueriesRouter(reportStore)
     try {
         reportStore.initializeStore()
     } catch (e: Exception) {
@@ -40,7 +40,7 @@ fun main(): Unit = runBlocking {
                 } else {
                     try {
                         val query = GetMemberStatsQuery(memberId)
-                        val result = queriesHandler.handle(query)
+                        val result = queriesHandler.route(query)
                         call.respondText(result)
                     } catch (e: Exception) {
                         call.error(e.message)
@@ -54,7 +54,7 @@ fun main(): Unit = runBlocking {
                 } else {
                     try {
                         val command = UpdateStoreForMemberCommand(memberId)
-                        val result = commandsHandler.handle(command)
+                        val result = commandsHandler.route(command)
                         call.respondText(result)
                     } catch (e: Exception) {
                         call.error(e.message)

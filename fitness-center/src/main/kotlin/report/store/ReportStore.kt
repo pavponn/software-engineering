@@ -1,7 +1,6 @@
 package report.store
 
-import common.model.MemberReport
-import java.time.Instant
+import base.model.MemberReport
 
 interface ReportStore {
 

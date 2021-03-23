@@ -1,6 +1,6 @@
 package admin.dao
 
-import common.model.Member
+import base.model.Member
 
 interface AdminQueriesDao {
 

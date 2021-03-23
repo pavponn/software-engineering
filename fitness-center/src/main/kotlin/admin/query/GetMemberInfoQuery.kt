@@ -1,5 +1,5 @@
 package admin.query
 
-import common.query.Query
+import base.query.Query
 
 data class GetMemberInfoQuery(val memberId: Long): Query

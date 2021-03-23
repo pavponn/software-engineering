@@ -1,15 +1,15 @@
 package admin
 
 import admin.command.AddMemberCommand
-import admin.command.AdminCommandsHandler
+import admin.command.AdminCommandsRouter
 import admin.command.RenewSubscriptionCommand
 import admin.dao.DatabaseAdminCommandsDao
 import admin.dao.DatabaseAdminQueriesDao
-import admin.query.AdminQueriesHandler
+import admin.query.AdminQueriesRouter
 import admin.query.GetMemberInfoQuery
-import common.clock.Clock
-import common.clock.NormalClock
-import common.connection.PostgresConnection
+import base.clock.Clock
+import base.clock.NormalClock
+import base.connection.PostgresConnection
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -25,8 +25,8 @@ fun main() = runBlocking {
     val connection = PostgresConnection.getConnection()
     val commandsDao = DatabaseAdminCommandsDao(connection)
     val queriesDao = DatabaseAdminQueriesDao(connection)
-    val commandsHandler = AdminCommandsHandler(commandsDao)
-    val queriesHandler = AdminQueriesHandler(queriesDao)
+    val commandsHandler = AdminCommandsRouter(commandsDao)
+    val queriesHandler = AdminQueriesRouter(queriesDao)
     embeddedServer(Netty, port = 2122) {
         routing {
             post("/admin/member") {
@@ -36,7 +36,7 @@ fun main() = runBlocking {
                 } else {
                     try {
                         val command = AddMemberCommand(name)
-                        val result = commandsHandler.handle(command)
+                        val result = commandsHandler.route(command)
                         call.respondText(result)
                     } catch (e: Exception) {
                         call.error(e.message)
@@ -53,7 +53,7 @@ fun main() = runBlocking {
                     try {
                         val endTime = Instant.parse(endTimeString)
                         val command = RenewSubscriptionCommand(memberId, endTime)
-                        val result = commandsHandler.handle(command)
+                        val result = commandsHandler.route(command)
                         call.respondText(result)
                     } catch (e: Exception) {
                         call.error(e.message)
@@ -68,7 +68,7 @@ fun main() = runBlocking {
                 } else {
                     try {
                         val query = GetMemberInfoQuery(memberId)
-                        val result = queriesHandler.handle(query)
+                        val result = queriesHandler.route(query)
                         call.respondText(result)
                     } catch (e: Exception) {
                         call.error(e.message)

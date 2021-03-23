@@ -1,6 +1,6 @@
 package report.dao
 
-import common.model.MemberReport
+import base.model.MemberReport
 
 interface ReportQueriesDao {
 

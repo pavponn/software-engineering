@@ -1,7 +1,7 @@
 package admin.dao
 
 import com.github.jasync.sql.db.SuspendingConnection
-import common.dao.AbstractDatabaseFitnessDao
+import base.dao.AbstractDatabaseFitnessDao
 
 class DatabaseAdminQueriesDao(private val connection: SuspendingConnection) : AdminQueriesDao,
     AbstractDatabaseFitnessDao() {

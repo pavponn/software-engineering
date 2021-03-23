@@ -1,8 +1,8 @@
 package admin.dao
 
 import com.github.jasync.sql.db.SuspendingConnection
-import common.dao.AbstractDatabaseFitnessDao
-import sql.SqlQueries
+import base.dao.AbstractDatabaseFitnessDao
+import base.sql.SqlQueries
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 
@@ -15,7 +15,7 @@ class DatabaseAdminCommandsDao(private val connection: SuspendingConnection) : A
 
     override suspend fun addMember(name: String): Long = connection.inTransaction {
         val newId = getId(it)
-        it.sendPreparedStatement(SqlQueries.addUser, listOf(newId, name))
+        it.sendPreparedStatement(SqlQueries.addMember, listOf(newId, name))
         newId
     }
 
@@ -31,13 +31,13 @@ class DatabaseAdminCommandsDao(private val connection: SuspendingConnection) : A
             val idInfo = idInfoRef.get()
             if (idInfo.maxUsedId == idInfo.maxId) {
                 val curMaxId = if (idInfo.maxUsedId == -1L) {
-                    val rows = transaction.sendPreparedStatement(SqlQueries.getMaxUserId).rows
+                    val rows = transaction.sendPreparedStatement(SqlQueries.getMaxMemberId).rows
                     rows[0].getLong("maxid")!!
                 } else {
                     idInfo.maxId
                 }
                 val nextMaxId = curMaxId + 100
-                transaction.sendPreparedStatement(SqlQueries.updateMaxIdForUsers, listOf(nextMaxId, curMaxId))
+                transaction.sendPreparedStatement(SqlQueries.updateMaxIdForMembers, listOf(nextMaxId, curMaxId))
                 if (idInfoRef.compareAndSet(idInfo, IdInfo(curMaxId + 1, nextMaxId))) {
                     return curMaxId + 1
                 }
